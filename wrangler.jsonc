@@ -4,5 +4,12 @@
   "compatibility_date": "2026-11-15",
   "assets": {
     "directory": "."
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "yahan_apne_d1_database_ka_naam_likhein",
+      "database_id": "yahan_apni_database_id_likhein"
+    }
+  ]
 }
