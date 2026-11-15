@@ -1,477 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulated SMS Earning Platform</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    
-    /* Modern Fintech Mesh Background */
-    body { 
-      background-color: #f0fdf4; 
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.15) 0px, transparent 50%),
-        radial-gradient(at 50% 50%, rgba(209, 250, 229, 0.5) 0px, transparent 70%);
-      color: #1e293b; 
-      min-height: 100vh; 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      padding: 16px; 
-    }
-
-    .container { 
-      width: 100%; 
-      max-width: 420px; 
-      background: rgba(255, 255, 255, 0.95); 
-      backdrop-filter: blur(10px);
-      padding: 24px; 
-      border-radius: 20px; 
-      box-shadow: 0 20px 40px rgba(5, 150, 105, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05); 
-      border: 1px solid #bbf7d0; 
-    }
-    
-    /* Animated Sliding Toggle Switch */
-    .toggle-container { position: relative; display: flex; background: #e6f4ea; padding: 4px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #c6f6d5; }
-    .toggle-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #047857; font-weight: 600; cursor: pointer; z-index: 2; transition: color 0.3s ease; font-size: 14px; text-align: center; }
-    .toggle-btn.active { color: #ffffff; }
-    .toggle-slider { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); background: #059669; border-radius: 9px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3); }
-    .toggle-slider.right { transform: translateX(100%); }
-
-    .form-group { margin-bottom: 16px; }
-    label { display: block; font-size: 13px; color: #4b5563; margin-bottom: 6px; font-weight: 500; }
-    input { width: 100%; padding: 12px 14px; background: #f9fafb; border: 1px solid #d1d5db; color: #1f2937; border-radius: 10px; outline: none; font-size: 14px; transition: all 0.2s; }
-    input:focus { border-color: #059669; background: #ffffff; box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12); }
-    
-    .btn { width: 100%; padding: 12px; background: #059669; color: #fff; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 14px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25); }
-    .btn:hover { background: #047857; transform: translateY(-1px); }
-    .hidden { display: none !important; }
-    
-    .wallet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .wallet-card { background: #f0fdf4; padding: 16px; border-radius: 14px; border: 1px solid #bbf7d0; text-align: center; }
-    .wallet-card p { font-size: 12px; color: #047857; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    .wallet-card h3 { font-size: 20px; font-weight: bold; margin-top: 6px; }
-    .sms-bal { color: #0284c7; }
-    .earn-bal { color: #059669; }
-    
-    .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
-    .action-btn { padding: 10px 4px; border: none; border-radius: 10px; font-weight: 600; font-size: 12px; cursor: pointer; color: #fff; transition: opacity 0.2s; }
-    .action-btn:hover { opacity: 0.9; }
-    .btn-add { background: #2563eb; }
-    .btn-sms { background: #059669; }
-    .btn-withdraw { background: #d97706; }
-    
-    .history-box { max-height: 190px; overflow-y: auto; font-size: 12px; padding-right: 4px; }
-    .history-item { background: #f9fafb; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e5e7eb; }
-    
-    .badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; }
-    .badge-approved { background: #d1fae5; color: #065f46; }
-    .badge-declined, .badge-rejected { background: #fee2e2; color: #991b1b; }
-    .badge-pending { background: #fef3c7; color: #92400e; }
-    
-    /* Modal Styles */
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; padding: 16px; z-index: 100; }
-    .modal-content { background: #ffffff; padding: 24px; border-radius: 20px; width: 100%; max-width: 360px; border: 1px solid #e5e7eb; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-    .modal-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; color: #1f2937; }
-    .close-btn { background: transparent; border: none; color: #6b7280; width: 100%; margin-top: 12px; cursor: pointer; font-size: 13px; font-weight: 500; }
-    .flex-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 12px; margin-bottom: 16px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fintech SMS Earning Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @keyframes popupIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-popup {
+            animation: popupIn 0.3s ease-out forwards;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 min-h-screen flex items-center justify-center p-4">
 
-  <div class="container">
-    
-    <!-- AUTH SECTION -->
-    <div id="auth-section">
-      <!-- Animated Sliding Toggle Switch -->
-      <div class="toggle-container">
-        <div id="toggle-slider" class="toggle-slider"></div>
-        <button id="tab-login-btn" onclick="switchAuth('login')" class="toggle-btn active">Login</button>
-        <button id="tab-register-btn" onclick="switchAuth('register')" class="toggle-btn">Register</button>
-      </div>
-
-      <!-- Login Form -->
-      <form id="form-login" onsubmit="handleLogin(event)">
-        <h2 style="font-size: 18px; margin-bottom: 16px; text-align: center; color: #065f46;">Welcome Back</h2>
-        <div class="form-group">
-          <label>Mobile Number</label>
-          <input type="text" id="login-mobile" required placeholder="Enter mobile number">
+    <!-- Main Card Container -->
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-emerald-100 p-6 sm:p-8">
+        
+        <!-- Header / Logo Area -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-emerald-800 tracking-tight">Fintech SMS Earning</h1>
+            <p class="text-xs text-gray-500 mt-1">Secure & Fast Simulated Earning Platform</p>
         </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="login-password" required placeholder="••••••••">
+
+        <!-- Toggle Switch -->
+        <div class="flex bg-emerald-50 p-1 rounded-xl mb-6 relative">
+            <div id="toggle-bg" class="absolute w-1/2 h-[calc(100%-8px)] top-1 bg-emerald-600 rounded-lg shadow-sm transition-all duration-300"></div>
+            <button onclick="switchTab('login')" id="btn-login" class="w-1/2 py-2.5 text-sm font-semibold z-10 text-white transition-colors duration-200">Login</button>
+            <button onclick="switchTab('register')" id="btn-register" class="w-1/2 py-2.5 text-sm font-semibold z-10 text-emerald-700 transition-colors duration-200">Register</button>
         </div>
-        <button type="submit" class="btn">Login</button>
-      </form>
 
-      <!-- Register Form -->
-      <form id="form-register" onsubmit="handleRegister(event)" class="hidden">
-        <h2 style="font-size: 18px; margin-bottom: 16px; text-align: center; color: #065f46;">Create Account</h2>
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" id="reg-name" required placeholder="John Doe">
-        </div>
-        <div class="form-group">
-          <label>Mobile Number</label>
-          <input type="text" id="reg-mobile" required placeholder="9876543210">
-        </div>
-        <div class="form-group">
-          <label>Create Password</label>
-          <input type="password" id="reg-password" required placeholder="••••••••">
-        </div>
-        <button type="submit" class="btn">Register</button>
-      </form>
-    </div>
-
-    <!-- DASHBOARD SECTION -->
-    <div id="dashboard-section" class="hidden">
-      <div class="flex-header">
-        <div>
-          <h3 id="user-display-name" style="font-size: 16px; color: #065f46;">User</h3>
-          <p id="user-display-mobile" style="font-size: 11px; color: #6b7280;"></p>
-        </div>
-        <div style="display: flex; gap: 6px;">
-          <button id="admin-btn" onclick="openAdminModal()" class="hidden" style="background: #7c3aed; color: #fff; border:none; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;">Admin Panel</button>
-          <button onclick="logout()" style="background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;">Logout</button>
-        </div>
-      </div>
-
-      <!-- Wallets -->
-      <div class="wallet-grid">
-        <div class="wallet-card">
-          <p>SMS Wallet</p>
-          <h3 id="sms-wallet-bal" class="sms-bal">₹0.00</h3>
-        </div>
-        <div class="wallet-card">
-          <p>Earning Wallet</p>
-          <h3 id="earn-wallet-bal" class="earn-bal">₹0.00</h3>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="action-grid">
-        <button onclick="openModal('addFundModal')" class="action-btn btn-add">Add Fund</button>
-        <button onclick="openModal('smsModal')" class="action-btn btn-sms">Send SMS</button>
-        <button onclick="openModal('withdrawModal')" class="action-btn btn-withdraw">Withdraw</button>
-      </div>
-
-      <!-- History -->
-      <div>
-        <p style="font-size: 13px; font-weight: bold; color: #4b5563; margin-bottom: 8px;">Transaction History</p>
-        <div id="activity-history" class="history-box"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- MODALS -->
-  <!-- Add Fund Modal -->
-  <div id="addFundModal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-title">Add Fund (₹500 - ₹2000)</div>
-      <div class="form-group">
-        <input type="number" id="add-fund-amt" min="500" max="2000" placeholder="Enter Amount (₹500 - ₹2000)">
-      </div>
-      <button onclick="proceedToQR()" class="btn" style="margin-bottom: 12px;">Proceed to Pay</button>
-      
-      <div id="qr-area" class="hidden" style="text-align: center;">
-        <div style="background: #f0fdf4; padding: 12px; display: inline-block; border-radius: 12px; border: 1px solid #bbf7d0; margin-bottom: 10px;">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=dummy@upi&pn=SMSEarning" style="width: 140px; height: 140px;">
-        </div>
-        <p style="color: #dc2626; font-weight: bold; font-size: 13px; margin-bottom: 10px;">Time Left: <span id="timer">05:00</span></p>
-        <div class="form-group">
-          <input type="text" id="utr-number" placeholder="Enter 12-digit UTR Number">
-        </div>
-        <button onclick="submitFundRequest()" class="btn" style="background: #059669;">Submit UTR</button>
-      </div>
-      <button onclick="closeModal('addFundModal')" class="close-btn">Cancel</button>
-    </div>
-  </div>
-
-  <!-- Send SMS Modal -->
-  <div id="smsModal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-title">Send SMS Task</div>
-      <div style="background: #f0fdf4; padding: 12px; border-radius: 12px; border: 1px solid #bbf7d0; margin-bottom: 16px; font-size: 12px;">
-        <p style="margin-bottom: 6px;"><strong>To Number:</strong> <span id="rand-num" style="color: #0284c7; font-family: monospace; font-weight: bold;">Loading...</span></p>
-        <p style="margin-bottom: 6px;"><strong>Message:</strong> <span style="color: #374151;">"Hello, your verification code is 4829."</span></p>
-        <p style="color: #d97706; font-size: 11px; font-weight: 600; margin-top: 4px;">Fee: ₹0.50 | Earning: ₹2.50</p>
-      </div>
-      <button onclick="sendSMS()" class="btn" style="background: #059669; margin-bottom: 8px;">Send SMS Now</button>
-      <button onclick="closeModal('smsModal')" class="close-btn">Close</button>
-    </div>
-  </div>
-
-  <!-- Withdraw Modal -->
-  <div id="withdrawModal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-title">Withdraw (₹5k - ₹30k)</div>
-      <div class="form-group">
-        <input type="number" id="withdraw-amt" min="5000" max="30000" placeholder="Enter Amount">
-      </div>
-      <div class="form-group">
-        <input type="text" id="withdraw-upi" placeholder="Enter UPI ID / Bank Details">
-      </div>
-      <button onclick="requestWithdrawal()" class="btn" style="background: #d97706; margin-bottom: 8px;">Submit Request</button>
-      <button onclick="closeModal('withdrawModal')" class="close-btn">Cancel</button>
-    </div>
-  </div>
-
-  <!-- Admin Modal -->
-  <div id="adminModal" class="modal hidden">
-    <div class="modal-content" style="max-width: 440px; max-height: 85vh; overflow-y: auto;">
-      <div class="flex-header">
-        <div style="font-weight: bold; color: #7c3aed; font-size: 14px;">Admin Control Panel</div>
-        <button onclick="closeModal('adminModal')" style="background:none; border:none; color:#6b7280; cursor:pointer; font-weight: 500;">Close</button>
-      </div>
-      
-      <p style="font-weight: bold; font-size: 12px; color: #4b5563; margin-bottom: 8px;">Add Fund Requests</p>
-      <div id="admin-fund-list" style="margin-bottom: 16px;"></div>
-
-      <p style="font-weight: bold; font-size: 12px; color: #4b5563; margin-bottom: 8px;">Withdrawal Requests</p>
-      <div id="admin-withdraw-list"></div>
-    </div>
-  </div>
-
-  <script>
-    const API_URL = ""; // Apne Cloudflare Worker ka URL yahan dalein
-    let currentUser = null;
-    let timerInterval = null;
-
-    function switchAuth(tab) {
-      const slider = document.getElementById('toggle-slider');
-      if (tab === 'login') {
-        document.getElementById('form-login').classList.remove('hidden');
-        document.getElementById('form-register').classList.add('hidden');
-        document.getElementById('tab-login-btn').classList.add('active');
-        document.getElementById('tab-register-btn').classList.remove('active');
-        slider.classList.remove('right');
-      } else {
-        document.getElementById('form-login').classList.add('hidden');
-        document.getElementById('form-register').classList.remove('hidden');
-        document.getElementById('tab-register-btn').classList.add('active');
-        document.getElementById('tab-login-btn').classList.remove('active');
-        slider.classList.add('right');
-      }
-    }
-
-    async function handleRegister(e) {
-      e.preventDefault();
-      const name = document.getElementById('reg-name').value;
-      const mobile = document.getElementById('reg-mobile').value;
-      const password = document.getElementById('reg-password').value;
-
-      const res = await fetch(`${API_URL}/api/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, mobile, password })
-      });
-      const data = await res.json();
-      if (data.success) { alert("Registered successfully! Please login."); switchAuth('login'); }
-      else { alert(data.error); }
-    }
-
-    async function handleLogin(e) {
-      e.preventDefault();
-      const mobile = document.getElementById('login-mobile').value;
-      const password = document.getElementById('login-password').value;
-
-      const res = await fetch(`${API_URL}/api/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mobile, password })
-      });
-      const data = await res.json();
-      if (data.success) {
-        currentUser = data.user;
-        loadDashboard();
-      } else { alert(data.error); }
-    }
-
-    async function loadDashboard() {
-      document.getElementById('auth-section').classList.add('hidden');
-      document.getElementById('dashboard-section').classList.remove('hidden');
-      
-      if (currentUser.role === 'admin') {
-        document.getElementById('admin-btn').classList.remove('hidden');
-      }
-
-      const res = await fetch(`${API_URL}/api/user-data?user_id=${currentUser.id}`);
-      const data = await res.json();
-      
-      if (data.success) {
-        document.getElementById('user-display-name').innerText = data.user.name;
-        document.getElementById('user-display-mobile').innerText = data.user.mobile;
-        document.getElementById('sms-wallet-bal').innerText = `₹${data.user.sms_wallet.toFixed(2)}`;
-        document.getElementById('earn-wallet-bal').innerText = `₹${data.user.earning_wallet.toFixed(2)}`;
-
-        let html = '';
-        data.addFundReqs.forEach(f => {
-          let badgeClass = f.status === 'Approved' ? 'badge-approved' : f.status === 'Declined' ? 'badge-declined' : 'badge-pending';
-          html += `<div class="history-item">
-            <div><p style="font-weight: bold; color: #1f2937;">Add Fund: ₹${f.amount}</p><p style="font-size: 10px; color: #6b7280;">UTR: ${f.utr_number}</p></div>
-            <span class="badge ${badgeClass}">${f.status} ${f.reason ? '('+f.reason+')':''}</span>
-          </div>`;
-        });
-        data.withdrawals.forEach(w => {
-          let badgeClass = w.status === 'Approved' ? 'badge-approved' : w.status === 'Rejected' ? 'badge-rejected' : 'badge-pending';
-          html += `<div class="history-item">
-            <div><p style="font-weight: bold; color: #1f2937;">Withdraw: ₹${w.amount}</p><p style="font-size: 10px; color: #6b7280;">${w.payment_info}</p></div>
-            <span class="badge ${badgeClass}">${w.status} ${w.reason ? '('+w.reason+')':''}</span>
-          </div>`;
-        });
-        document.getElementById('activity-history').innerHTML = html || '<p style="text-align: center; color: #9ca3af; padding: 12px;">No transaction history</p>';
-      }
-    }
-
-    function logout() {
-      currentUser = null;
-      document.getElementById('dashboard-section').classList.add('hidden');
-      document.getElementById('auth-section').classList.remove('hidden');
-    }
-
-    function openModal(id) {
-      document.getElementById(id).classList.remove('hidden');
-      if (id === 'smsModal') generateRandomMaskedNumber();
-    }
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-      if (id === 'addFundModal') {
-        clearInterval(timerInterval);
-        document.getElementById('qr-area').classList.add('hidden');
-        document.getElementById('add-fund-amt').value = '';
-        document.getElementById('utr-number').value = '';
-      }
-    }
-
-    function generateRandomMaskedNumber() {
-      const starts = [6, 7, 8, 9];
-      const firstDigit = starts[Math.floor(Math.random() * starts.length)];
-      const randomPart = Math.floor(100 + Math.random() * 900);
-      document.getElementById('rand-num').innerText = `${firstDigit}${randomPart}******`;
-    }
-
-    function proceedToQR() {
-      const amt = document.getElementById('add-fund-amt').value;
-      if (amt < 500 || amt > 2000) { alert("Amount must be between ₹500 and ₹2,000"); return; }
-      document.getElementById('qr-area').classList.remove('hidden');
-      
-      let timeLeft = 300;
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        let m = Math.floor(timeLeft / 60);
-        let s = timeLeft % 60;
-        document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-        if (timeLeft <= 0) { clearInterval(timerInterval); alert("QR expired!"); closeModal('addFundModal'); }
-        timeLeft--;
-      }, 1000);
-    }
-
-    async function submitFundRequest() {
-      const amount = document.getElementById('add-fund-amt').value;
-      const utr_number = document.getElementById('utr-number').value;
-      if (!utr_number) { alert("Enter UTR Number"); return; }
-
-      const res = await fetch(`${API_URL}/api/add-fund`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: currentUser.id, amount, utr_number })
-      });
-      const data = await res.json();
-      if (data.success) { alert("Submitted successfully!"); closeModal('addFundModal'); loadDashboard(); }
-      else { alert(data.error); }
-    }
-
-    async function sendSMS() {
-      const masked_number = document.getElementById('rand-num').innerText;
-      const res = await fetch(`${API_URL}/api/send-sms`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: currentUser.id, masked_number, message_text: "Hello, your verification code is 4829." })
-      });
-      const data = await res.json();
-      if (data.success) { alert("SMS Sent Successfully! ₹2.50 added."); closeModal('smsModal'); loadDashboard(); }
-      else { alert(data.error); }
-    }
-
-    async function requestWithdrawal() {
-      const amount = document.getElementById('withdraw-amt').value;
-      const payment_info = document.getElementById('withdraw-upi').value;
-
-      const res = await fetch(`${API_URL}/api/withdraw`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: currentUser.id, amount, payment_info })
-      });
-      const data = await res.json();
-      if (data.success) { alert("Withdrawal requested successfully!"); closeModal('withdrawModal'); loadDashboard(); }
-      else { alert(data.error); }
-    }
-
-    async function openAdminModal() {
-      document.getElementById('adminModal').classList.remove('hidden');
-      const res = await fetch(`${API_URL}/api/admin/data`);
-      const data = await res.json();
-      
-      if (data.success) {
-        let fHtml = '';
-        data.fundReqs.forEach(f => {
-          fHtml += `<div class="history-item" style="flex-direction: column; align-items: flex-start; gap: 6px;">
-            <div style="width: 100%; display: flex; justify-content: space-between;">
-              <span style="color: #1f2937;"><b>${f.name}</b> (${f.mobile})</span>
-              <span style="color: #059669; font-weight: bold;">₹${f.amount}</span>
+        <!-- Login Form -->
+        <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Mobile Number</label>
+                <input type="tel" id="login-mobile" required placeholder="Enter mobile number" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
             </div>
-            <div style="font-size: 11px; color: #6b7280; width: 100%; display: flex; justify-content: space-between;">
-              <span>UTR: ${f.utr_number}</span>
-              <span>Status: <b>${f.status}</b></span>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Password</label>
+                <input type="password" id="login-password" required placeholder="Enter password" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
             </div>
-            ${f.status === 'Pending' ? `<div style="display: flex; gap: 6px; width: 100%; margin-top: 4px;">
-              <button onclick="adminAction('fund', ${f.id}, 'approve')" style="flex:1; background: #059669; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer; font-weight:600;">Approve</button>
-              <button onclick="adminAction('fund', ${f.id}, 'decline')" style="flex:1; background: #dc2626; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer; font-weight:600;">Decline</button>
-            </div>` : ''}
-          </div>`;
-        });
-        document.getElementById('admin-fund-list').innerHTML = fHtml || '<p style="color: #9ca3af; font-size: 11px;">No pending requests</p>';
+            <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/20 transition-all active:scale-[0.98]">
+                Login
+            </button>
+        </form>
 
-        let wHtml = '';
-        data.withdrawals.forEach(w => {
-          wHtml += `<div class="history-item" style="flex-direction: column; align-items: flex-start; gap: 6px;">
-            <div style="width: 100%; display: flex; justify-content: space-between;">
-              <span style="color: #1f2937;"><b>${w.name}</b> (${w.mobile})</span>
-              <span style="color: #059669; font-weight: bold;">₹${w.amount}</span>
+        <!-- Registration Form -->
+        <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Full Name</label>
+                <input type="text" id="reg-name" required placeholder="Enter your full name" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
             </div>
-            <div style="font-size: 11px; color: #6b7280; width: 100%; display: flex; justify-content: space-between;">
-              <span>UPI: ${w.payment_info}</span>
-              <span>Status: <b>${w.status}</b></span>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Mobile Number</label>
+                <input type="tel" id="reg-mobile" required placeholder="Enter mobile number" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
             </div>
-            ${w.status === 'Pending' ? `<div style="display: flex; gap: 6px; width: 100%; margin-top: 4px;">
-              <button onclick="adminAction('withdraw', ${w.id}, 'approve')" style="flex:1; background: #059669; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer; font-weight:600;">Approve</button>
-              <button onclick="adminAction('withdraw', ${w.id}, 'decline')" style="flex:1; background: #dc2626; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer; font-weight:600;">Reject</button>
-            </div>` : ''}
-          </div>`;
-        });
-        document.getElementById('admin-withdraw-list').innerHTML = wHtml || '<p style="color: #9ca3af; font-size: 11px;">No withdrawal requests</p>';
-      }
-    }
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Create Password</label>
+                <input type="password" id="reg-password" required placeholder="Create a strong password" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
+            </div>
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center text-xs text-emerald-800 font-medium">
+                🎁 Get <span class="font-bold">₹100 Sign-up Bonus</span> instantly in your wallet!
+            </div>
+            <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/20 transition-all active:scale-[0.98]">
+                Register Now
+            </button>
+        </form>
+    </div>
 
-    async function adminAction(type, id, action) {
-      let reason = null;
-      if (action === 'decline') {
-        reason = prompt("Enter short reason (e.g., Invalid UTR / Rejected):", "Invalid Details");
-        if (!reason) return;
-      }
+    <!-- Animated Popup Modal -->
+    <div id="popup-modal" class="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 hidden z-50">
+        <div id="popup-box" class="bg-white w-full max-w-sm rounded-2xl p-6 text-center shadow-2xl animate-popup transform transition-all">
+            <div id="popup-icon-container" class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl">
+                <!-- Dynamic Icon -->
+            </div>
+            <h3 id="popup-title" class="text-lg font-bold text-gray-800 mb-1"></h3>
+            <p id="popup-message" class="text-sm text-gray-600 mb-6"></p>
+            <button onclick="closePopup()" class="w-full py-2.5 bg-gray-900 hover:bg-black text-white font-semibold rounded-xl transition-all">
+                OK
+            </button>
+        </div>
+    </div>
 
-      const res = await fetch(`${API_URL}/api/admin/action`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, id, action: action === 'decline' ? 'decline' : 'approve', reason })
-      });
-      const data = await res.json();
-      if (data.success) { alert("Updated successfully!"); openAdminModal(); }
-      else { alert(data.error); }
-    }
-  </script>
+    <script>
+        // Toggle Switch Logic
+        function switchTab(tab) {
+            const loginForm = document.getElementById('form-login');
+            const regForm = document.getElementById('form-register');
+            const btnLogin = document.getElementById('btn-login');
+            const btnReg = document.getElementById('btn-register');
+            const toggleBg = document.getElementById('toggle-bg');
+
+            if (tab === 'login') {
+                toggleBg.style.transform = 'translateX(0%)';
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                btnLogin.classList.add('text-white');
+                btnLogin.classList.remove('text-emerald-700');
+                btnReg.classList.add('text-emerald-700');
+                btnReg.classList.remove('text-white');
+            } else {
+                toggleBg.style.transform = 'translateX(100%)';
+                regForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                btnReg.classList.add('text-white');
+                btnReg.classList.remove('text-emerald-700');
+                btnLogin.classList.add('text-emerald-700');
+                btnLogin.classList.remove('text-white');
+            }
+        }
+
+        // Popup Notification System
+        function showPopup(type, title, message) {
+            const modal = document.getElementById('popup-modal');
+            const iconContainer = document.getElementById('popup-icon-container');
+            const titleEl = document.getElementById('popup-title');
+            const msgEl = document.getElementById('popup-message');
+
+            titleEl.innerText = title;
+            msgEl.innerText = message;
+
+            if (type === 'success') {
+                iconContainer.className = "w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl bg-emerald-100 text-emerald-600";
+                iconContainer.innerHTML = "✓";
+            } else {
+                iconContainer.className = "w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl bg-red-100 text-red-600";
+                iconContainer.innerHTML = "✕";
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closePopup() {
+            document.getElementById('popup-modal').classList.add('hidden');
+        }
+
+        // Handle Registration
+        async function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const mobile = document.getElementById('reg-mobile').value;
+            const password = document.getElementById('reg-password').value;
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, mobile, password })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    showPopup('success', 'Registration Successful!', 'Your account has been created successfully. ₹100 bonus added! Please login now.');
+                    switchTab('login');
+                } else {
+                    showPopup('error', 'Registration Failed', data.error || 'Something went wrong. Please try again.');
+                }
+            } catch (err) {
+                showPopup('error', 'Error', 'Network error or server unavailable.');
+            }
+        }
+
+        // Handle Login
+        async function handleLogin(e) {
+            e.preventDefault();
+            const mobile = document.getElementById('login-mobile').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile, password })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    showPopup('success', 'Login Successful!', 'Welcome back! Redirecting to your dashboard...');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html'; // ya jo bhi aapka dashboard route ho
+                    }, 1500);
+                } else {
+                    showPopup('error', 'Login Failed', data.error || 'Wrong password or mobile number. Please try again.');
+                }
+            } catch (err) {
+                showPopup('error', 'Error', 'Network error or server unavailable.');
+            }
+        }
+    </script>
 </body>
 </html>
