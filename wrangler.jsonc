@@ -8,8 +8,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "yahan_apne_d1_database_ka_naam_likhein",
-      "database_id": "yahan_apni_database_id_likhein"
+      "database_name": "broadcast_db",
+      "database_id": "yahan_apni_database_id_yahan_dalein"
     }
   ]
 }
