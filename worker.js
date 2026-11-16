@@ -132,11 +132,8 @@ const USER_HTML = `<!DOCTYPE html>
         <div id="view-kyc" class="p-4 space-y-4 flex-1 overflow-y-auto hidden">
             <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs space-y-3">
                 <h4 class="font-bold text-xs text-emerald-600 uppercase">KYC & Bank Details</h4>
-                <input type="text" id="kyc-aadhaar" maxlength="12" placeholder="12-digit Aadhaar Number" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs font-mono">
                 <input type="text" id="kyc-pan" maxlength="10" placeholder="PAN Card Number" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs font-mono uppercase">
-                <input type="text" id="kyc-holder" placeholder="Bank Account Holder Name" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs">
-                <input type="text" id="kyc-acc" placeholder="Bank Account Number" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs font-mono">
-                <input type="text" id="kyc-ifsc" placeholder="IFSC Code" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs font-mono uppercase">
+                <input type="text" id="kyc-bank" placeholder="Bank Details / UPI (e.g. A/C & IFSC)" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs">
                 <button onclick="saveFullKyc()" class="w-full py-2.5 bg-emerald-600 text-white font-semibold rounded-xl text-xs">Save KYC & Bank</button>
             </div>
         </div>
@@ -269,11 +266,8 @@ const USER_HTML = `<!DOCTYPE html>
             document.getElementById('bal-sms').innerText = \`₹\${currentUser.sms_wallet.toFixed(2)}\`;
             document.getElementById('bal-bonus-inline').innerText = \`₹\${currentUser.bonus_wallet.toFixed(2)}\`;
             document.getElementById('bal-earning').innerText = \`₹\${currentUser.earning_wallet.toFixed(2)}\`;
-            document.getElementById('kyc-aadhaar').value = currentUser.aadhaar_no || '';
             document.getElementById('kyc-pan').value = currentUser.pan_no || '';
-            document.getElementById('kyc-holder').value = currentUser.bank_holder || '';
-            document.getElementById('kyc-acc').value = currentUser.bank_acc || '';
-            document.getElementById('kyc-ifsc').value = currentUser.bank_ifsc || '';
+            document.getElementById('kyc-bank').value = currentUser.bank_details || '';
         }
         async function startSmsTask() {
             simulateLoading("Sending SMS...", async () => {
@@ -317,14 +311,11 @@ const USER_HTML = `<!DOCTYPE html>
         async function saveFullKyc() {
             const payload = {
                 userId: currentUser.id,
-                aadhaar: document.getElementById('kyc-aadhaar').value,
                 pan: document.getElementById('kyc-pan').value,
-                bank_holder: document.getElementById('kyc-holder').value,
-                bank_acc: document.getElementById('kyc-acc').value,
-                bank_ifsc: document.getElementById('kyc-ifsc').value
+                bank_details: document.getElementById('kyc-bank').value
             };
             await fetch('/api/kyc/update', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-            Object.assign(currentUser, { aadhaar_no: payload.aadhaar, pan_no: payload.pan, bank_holder: payload.bank_holder, bank_acc: payload.bank_acc, bank_ifsc: payload.bank_ifsc });
+            Object.assign(currentUser, { pan_no: payload.pan, bank_details: payload.bank_details });
             showPopup('success', 'Saved', 'KYC & Bank Details updated.');
         }
         function handleLogout() { location.reload(); }
@@ -471,24 +462,12 @@ const ADMIN_HTML = `<!DOCTYPE html>
                 <div id="modal-sec-kyc" class="space-y-3 hidden">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Aadhaar Number</label>
-                            <input type="text" id="edit-aadhaar" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs font-mono">
-                        </div>
-                        <div>
                             <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">PAN Number</label>
                             <input type="text" id="edit-pan" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs font-mono uppercase">
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Bank Account Holder Name</label>
-                            <input type="text" id="edit-bank-holder" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Bank Account Number</label>
-                            <input type="text" id="edit-bank-acc" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs font-mono">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">IFSC Code</label>
-                            <input type="text" id="edit-bank-ifsc" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs font-mono uppercase">
+                            <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Bank Details</label>
+                            <input type="text" id="edit-bank-details" class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-xs font-mono">
                         </div>
                     </div>
                 </div>
@@ -657,11 +636,8 @@ const ADMIN_HTML = `<!DOCTYPE html>
             document.getElementById('edit-earning-wallet').value = user.earning_wallet;
             document.getElementById('edit-bonus-wallet').value = user.bonus_wallet;
 
-            document.getElementById('edit-aadhaar').value = user.aadhaar_no || '';
             document.getElementById('edit-pan').value = user.pan_no || '';
-            document.getElementById('edit-bank-holder').value = user.bank_holder || '';
-            document.getElementById('edit-bank-acc').value = user.bank_acc || '';
-            document.getElementById('edit-bank-ifsc').value = user.bank_ifsc || '';
+            document.getElementById('edit-bank-details').value = user.bank_details || '';
 
             switchModalSubTab('edit');
             document.getElementById('user-detail-modal').classList.remove('hidden');
@@ -713,11 +689,8 @@ const ADMIN_HTML = `<!DOCTYPE html>
                 sms_wallet: parseFloat(document.getElementById('edit-sms-wallet').value) || 0,
                 earning_wallet: parseFloat(document.getElementById('edit-earning-wallet').value) || 0,
                 bonus_wallet: parseFloat(document.getElementById('edit-bonus-wallet').value) || 0,
-                aadhaar_no: document.getElementById('edit-aadhaar').value,
                 pan_no: document.getElementById('edit-pan').value,
-                bank_holder: document.getElementById('edit-bank-holder').value,
-                bank_acc: document.getElementById('edit-bank-acc').value,
-                bank_ifsc: document.getElementById('edit-bank-ifsc').value
+                bank_details: document.getElementById('edit-bank-details').value
             };
 
             const res = await fetch('/api/admin/user/update', {
@@ -761,7 +734,6 @@ export default {
     }
 
     try {
-      // SERVE HTML PAGES DIRECTLY
       if (path === "/" || path === "/index.html") {
         return new Response(USER_HTML, { status: 200, headers: { "Content-Type": "text/html" } });
       }
@@ -834,9 +806,9 @@ export default {
 
       // 7. USER KYC & BANK UPDATE API
       if (path === "/api/kyc/update" && method === "POST") {
-        const { userId, aadhaar, pan, bank_holder, bank_acc, bank_ifsc } = await request.json();
-        await env.DB.prepare("UPDATE users SET aadhaar_no = ?, pan_no = ?, bank_holder = ?, bank_acc = ?, bank_ifsc = ? WHERE id = ?")
-          .bind(aadhaar || '', pan || '', bank_holder || '', bank_acc || '', bank_ifsc || '', userId).run();
+        const { userId, pan, bank_details } = await request.json();
+        await env.DB.prepare("UPDATE users SET pan_no = ?, bank_details = ? WHERE id = ?")
+          .bind(pan || '', bank_details || '', userId).run();
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 
@@ -872,19 +844,19 @@ export default {
         return jsonResponse({ success: true, users: users.results || [] }, 200, corsHeaders);
       }
 
-      // 11. ADMIN: FULL USER UPDATE (ACCOUNT, PASSWORD, WALLETS, BANK, KYC)
+      // 11. ADMIN: FULL USER UPDATE
       if (path === "/api/admin/user/update" && method === "POST") {
         const body = await request.json();
         await env.DB.prepare(`
           UPDATE users 
           SET name = ?, mobile = ?, password = ?, role = ?, 
               sms_wallet = ?, earning_wallet = ?, bonus_wallet = ?, 
-              aadhaar_no = ?, pan_no = ?, bank_holder = ?, bank_acc = ?, bank_ifsc = ? 
+              pan_no = ?, bank_details = ? 
           WHERE id = ?
         `).bind(
           body.name, body.mobile, body.password, body.role,
           body.sms_wallet, body.earning_wallet, body.bonus_wallet,
-          body.aadhaar_no, body.pan_no, body.bank_holder, body.bank_acc, body.bank_ifsc,
+          body.pan_no, body.bank_details,
           body.userId
         ).run();
         return jsonResponse({ success: true }, 200, corsHeaders);
