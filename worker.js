@@ -4,7 +4,6 @@ export default {
     const path = url.pathname;
     const method = request.method;
 
-    // CORS Headers for smooth communication
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -23,13 +22,11 @@ export default {
           return jsonResponse({ error: "All fields are required" }, 400, corsHeaders);
         }
 
-        // Check if mobile already exists
         const existing = await env.DB.prepare("SELECT id FROM users WHERE mobile = ?").bind(mobile).first();
         if (existing) {
           return jsonResponse({ error: "Mobile number already registered" }, 400, corsHeaders);
         }
 
-        // Insert new user with ₹100 sign-up bonus in sms_wallet & bonus_wallet
         await env.DB.prepare(
           "INSERT INTO users (name, mobile, password, sms_wallet, earning_wallet, bonus_wallet) VALUES (?, ?, ?, 100.0, 0.0, 100.0)"
         ).bind(name, mobile, password).run();
@@ -49,7 +46,7 @@ export default {
         return jsonResponse({ success: true, user }, 200, corsHeaders);
       }
 
-      // 3. COMPLETE SMS TASK API (Deduct ₹0.50 from SMS/Bonus wallet, Add ₹1.50 to Earning wallet)
+      // 3. COMPLETE SMS TASK API
       if (path === "/api/task/complete" && method === "POST") {
         const { userId } = await request.json();
         const user = await env.DB.prepare("SELECT * FROM users WHERE id = ?").bind(userId).first();
@@ -64,7 +61,6 @@ export default {
         const cost = 0.50;
         const reward = 1.50;
 
-        // Check balance (use sms_wallet first, then bonus_wallet)
         if (smsWallet >= cost) {
           smsWallet -= cost;
         } else if (bonusWallet >= cost) {
@@ -75,20 +71,18 @@ export default {
 
         earningWallet += reward;
 
-        // Update database
         await env.DB.prepare(
           "UPDATE users SET sms_wallet = ?, bonus_wallet = ?, earning_wallet = ? WHERE id = ?"
         ).bind(smsWallet, bonusWallet, earningWallet, userId).run();
 
-        // Log SMS task
         await env.DB.prepare(
           "INSERT INTO sms_logs (user_id, recipient_number, message_text, status) VALUES (?, ?, ?, ?)"
-        ).bind(userId, "+919876543210", "Amazon Diwali Special Offer!", "Sent").run();
+        ).bind(userId, "+919876543210", "Amazon Diwali Special Offer! Flat 50% cashback on electronics.", "Sent").run();
 
         return jsonResponse({ success: true, sms_wallet: smsWallet, bonus_wallet: bonusWallet, earning_wallet: earningWallet }, 200, corsHeaders);
       }
 
-      // 4. ADD FUND REQUEST API (UTR Submission)
+      // 4. ADD FUND REQUEST API
       if (path === "/api/fund/add" && method === "POST") {
         const { userId, amount, utr } = await request.json();
         if (!amount || amount < 500 || amount > 2000) {
@@ -102,7 +96,7 @@ export default {
         return jsonResponse({ success: true, message: "Fund request submitted successfully" }, 200, corsHeaders);
       }
 
-      // 5. WITHDRAWAL REQUEST API (Min ₹5,000, Max ₹50,000)
+      // 5. WITHDRAWAL REQUEST API
       if (path === "/api/withdrawal/request" && method === "POST") {
         const { userId, amount, paymentInfo } = await request.json();
         if (!amount || amount < 5000 || amount > 50000) {
@@ -114,7 +108,6 @@ export default {
           return jsonResponse({ error: "Insufficient earning wallet balance" }, 400, corsHeaders);
         }
 
-        // Deduct from earning wallet immediately upon request
         const newEarning = user.earning_wallet - amount;
         await env.DB.prepare("UPDATE users SET earning_wallet = ? WHERE id = ?").bind(newEarning, userId).run();
 
@@ -122,10 +115,29 @@ export default {
           "INSERT INTO withdrawals (user_id, amount, payment_info, status) VALUES (?, ?, ?, 'Pending')"
         ).bind(userId, amount, paymentInfo).run();
 
-        return jsonResponse({ success: true, message: "Withdrawal requested successfully" }, 200, corsHeaders);
+        return jsonResponse({ success: true, new_earning: newEarning, message: "Withdrawal requested successfully" }, 200, corsHeaders);
       }
 
-      // 6. UPDATE PROFILE API
+      // 6. HISTORY API (Fetch logs)
+      if (path === "/api/history" && method === "GET") {
+        const userId = url.searchParams.get("userId");
+        if (!userId) {
+          return jsonResponse({ error: "User ID required" }, 400, corsHeaders);
+        }
+
+        const smsLogs = await env.DB.prepare("SELECT * FROM sms_logs WHERE user_id = ? ORDER BY id DESC").bind(userId).all();
+        const fundRequests = await env.DB.prepare("SELECT * FROM add_fund_requests WHERE user_id = ? ORDER BY id DESC").bind(userId).all();
+        const withdrawals = await env.DB.prepare("SELECT * FROM withdrawals WHERE user_id = ? ORDER BY id DESC").bind(userId).all();
+
+        return jsonResponse({
+          success: true,
+          smsLogs: smsLogs.results || [],
+          fundRequests: fundRequests.results || [],
+          withdrawals: withdrawals.results || []
+        }, 200, corsHeaders);
+      }
+
+      // 7. UPDATE PROFILE API
       if (path === "/api/profile/update" && method === "POST") {
         const { userId, name, mobile, password } = await request.json();
         
@@ -142,7 +154,7 @@ export default {
         return jsonResponse({ success: true, message: "Profile updated successfully" }, 200, corsHeaders);
       }
 
-      // Default: Serve static assets (index.html) via Cloudflare Workers Assets binding
+      // Default: Serve static assets
       return env.ASSETS.fetch(request);
 
     } catch (err) {
