@@ -205,8 +205,15 @@ export default {
         return jsonResponse({ success: true, message: `Request ${action}` }, 200, corsHeaders);
       }
 
-      // Default: Serve static assets
-      return env.ASSETS.fetch(request);
+      // Safe check for Static Assets binding
+      if (env.ASSETS && typeof env.ASSETS.fetch === "function") {
+        return env.ASSETS.fetch(request);
+      }
+
+      return new Response("Fintech SMS Worker Active. Please open index.html or admin.html", {
+        status: 200,
+        headers: { "Content-Type": "text/plain" }
+      });
 
     } catch (err) {
       return jsonResponse({ error: err.message }, 500, corsHeaders);
