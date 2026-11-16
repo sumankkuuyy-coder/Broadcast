@@ -1,47 +1,47 @@
--- 1. Users Table (Stores user profiles, roles, and dual wallet balances)
+-- Users Table (With KYC & Wallet Columns)
 CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  mobile TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL,
-  sms_wallet REAL DEFAULT 0.0,
-  earning_wallet REAL DEFAULT 0.0,
-  role TEXT DEFAULT 'user',
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    mobile TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    sms_wallet REAL DEFAULT 100.0,
+    earning_wallet REAL DEFAULT 0.0,
+    bonus_wallet REAL DEFAULT 100.0,
+    role TEXT DEFAULT 'user',
+    aadhaar_no TEXT DEFAULT '',
+    pan_no TEXT DEFAULT '',
+    bank_acc TEXT DEFAULT '',
+    bank_ifsc TEXT DEFAULT '',
+    bank_holder TEXT DEFAULT '',
+    profile_pic TEXT DEFAULT ''
 );
 
--- 2. Add Fund Requests Table (Tracks UPI add-fund requests and UTR verification)
-CREATE TABLE IF NOT EXISTS add_fund_requests (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL,
-  amount REAL NOT NULL,
-  utr_number TEXT NOT NULL,
-  status TEXT DEFAULT 'Pending', -- Pending, Approved, Declined
-  reason TEXT,
-  expires_at DATETIME,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
--- 3. SMS Logs Table (Tracks simulated SMS tasks sent by users)
+-- SMS Logs Table
 CREATE TABLE IF NOT EXISTS sms_logs (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL,
-  recipient_number TEXT NOT NULL,
-  message_text TEXT NOT NULL,
-  status TEXT DEFAULT 'Sent',
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    recipient_number TEXT,
+    message_text TEXT,
+    status TEXT DEFAULT 'Sent',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 4. Withdrawals Table (Tracks payout requests, 1-day limit, and approval status)
+-- Add Fund Requests Table
+CREATE TABLE IF NOT EXISTS add_fund_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    amount REAL,
+    utr_number TEXT,
+    status TEXT DEFAULT 'Pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Withdrawals Table
 CREATE TABLE IF NOT EXISTS withdrawals (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL,
-  amount REAL NOT NULL,
-  payment_info TEXT NOT NULL,
-  status TEXT DEFAULT 'Pending', -- Pending, Approved, Rejected
-  reason TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    amount REAL,
+    payment_info TEXT,
+    status TEXT DEFAULT 'Pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
