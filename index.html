@@ -20,7 +20,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-800 flex flex-col items-center justify-center p-0 sm:p-4">
 
-    <!-- GLOBAL LOADING OVERLAY (3-sec fake round loader) -->
+    <!-- GLOBAL 3-SEC LOADING OVERLAY -->
     <div id="global-loader" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex flex-col items-center justify-center text-white">
         <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin-slow mb-3"></div>
         <p id="loader-text" class="text-sm font-semibold tracking-wide">Processing...</p>
@@ -33,14 +33,12 @@
             <p class="text-xs text-gray-500 mt-1">Secure & Fast Simulated Earning Platform</p>
         </div>
 
-        <!-- Toggle Switch -->
         <div class="flex bg-blue-50 p-1 rounded-xl mb-6 relative">
             <div id="toggle-bg" class="absolute w-1/2 h-[calc(100%-8px)] top-1 bg-blue-600 rounded-lg shadow-sm transition-all duration-300"></div>
             <button onclick="switchTab('login')" id="btn-login" class="w-1/2 py-2.5 text-sm font-semibold z-10 text-white transition-colors duration-200">Login</button>
             <button onclick="switchTab('register')" id="btn-register" class="w-1/2 py-2.5 text-sm font-semibold z-10 text-blue-700 transition-colors duration-200">Register</button>
         </div>
 
-        <!-- Login Form -->
         <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
             <div>
                 <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Mobile Number</label>
@@ -55,7 +53,6 @@
             </button>
         </form>
 
-        <!-- Registration Form -->
         <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
             <div>
                 <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Full Name</label>
@@ -78,63 +75,49 @@
         </form>
     </div>
 
-    <!-- DASHBOARD SECTION (Android App Style) -->
-    <div id="dashboard-container" class="bg-gray-50 w-full max-w-md min-h-screen sm:min-h-[700px] sm:rounded-2xl shadow-xl overflow-hidden hidden flex flex-col justify-between">
+    <!-- MAIN APP CONTAINER -->
+    <div id="dashboard-container" class="bg-gray-50 w-full max-w-md min-h-screen sm:min-h-[700px] sm:rounded-2xl shadow-xl overflow-hidden hidden flex flex-col">
         
         <!-- Android App Bar Header -->
         <div class="bg-blue-700 text-white px-4 py-3.5 flex items-center justify-between shadow-md sticky top-0 z-20">
             <div class="flex items-center space-x-3">
-                <button onclick="toggleProfileDrawer()" class="p-1 hover:bg-blue-800 rounded-lg transition-all focus:outline-none">
+                <button onclick="toggleDrawer()" class="p-1 hover:bg-blue-800 rounded-lg transition-all focus:outline-none">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <h2 class="font-bold text-base tracking-wide">Fintech Dashboard</h2>
+                <h2 id="app-bar-title" class="font-bold text-base tracking-wide">Home</h2>
             </div>
-            <button onclick="handleLogout()" class="text-xs bg-blue-800 hover:bg-blue-900 px-3 py-1.5 rounded-lg font-medium transition-all shadow-xs">Logout</button>
+            <button onclick="handleLogout()" class="text-xs bg-blue-800 hover:bg-blue-900 px-3 py-1.5 rounded-lg font-medium transition-all">Logout</button>
         </div>
 
-        <!-- Dashboard Content Area -->
-        <div class="p-4 space-y-4 flex-1 overflow-y-auto">
-            
-            <!-- Wallets Section -->
-            <div class="grid grid-cols-3 gap-2">
-                <div class="bg-white border border-blue-100 rounded-xl p-2.5 text-center shadow-xs">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">SMS Wallet</p>
-                    <h3 id="bal-sms" class="text-xs sm:text-sm font-bold text-blue-700 mt-1">₹0.00</h3>
-                    <button onclick="openAddFundModal()" class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-[10px] py-1 rounded-md font-semibold transition-all">+ Add Fund</button>
-                </div>
-                <div class="bg-white border border-indigo-100 rounded-xl p-2.5 text-center shadow-xs">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Earning</p>
-                    <h3 id="bal-earning" class="text-xs sm:text-sm font-bold text-indigo-700 mt-1">₹0.00</h3>
-                    <button onclick="openWithdrawModal()" class="mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] py-1 rounded-md font-semibold transition-all">Withdraw</button>
-                </div>
-                <div class="bg-white border border-sky-100 rounded-xl p-2.5 text-center shadow-xs">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Bonus</p>
-                    <h3 id="bal-bonus" class="text-xs sm:text-sm font-bold text-sky-700 mt-1">₹0.00</h3>
-                    <span class="block mt-2 text-[9px] text-gray-400 font-medium">Non-Withdrawable</span>
-                </div>
+        <!-- VIEW 1: HOME (Only SMS Task - No Wallet on Home) -->
+        <div id="view-home" class="p-4 space-y-4 flex-1 overflow-y-auto">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-4 shadow-md">
+                <p class="text-xs opacity-80">Welcome back,</p>
+                <h3 id="home-user-name" class="text-lg font-bold">User</h3>
+                <p class="text-[11px] mt-1 opacity-90">Complete daily promotional SMS tasks and earn instant rewards.</p>
             </div>
 
-            <!-- Simulated SMS Task Section -->
+            <!-- Simulated SMS Task Card -->
             <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
                 <h3 class="font-bold text-xs text-gray-800 mb-3 flex items-center justify-between">
                     <span>📱 Simulated SMS Campaign</span>
-                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-bold">Earn ₹1.50</span>
+                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-bold">Reward: ₹1.50</span>
                 </h3>
                 
-                <div class="space-y-2.5">
+                <div class="space-y-3">
                     <div>
-                        <label class="block text-[10px] font-semibold text-gray-400 uppercase">Target Mobile Number</label>
-                        <input type="text" readonly value="+91 98765 XXXXX" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-600 font-mono">
+                        <label class="block text-[10px] font-semibold text-gray-400 uppercase mb-1">Target Mobile Number (6-Digit Mask)</label>
+                        <input type="text" id="task-mobile" readonly value="+91 98XXXXXX10" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-700 font-mono">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-semibold text-gray-400 uppercase">Message Content</label>
-                        <textarea readonly rows="2" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-600">Amazon Diwali Special Offer! Flat 50% cashback on electronics. Shop now: https://amzn.in/diwali-offer</textarea>
+                        <label class="block text-[10px] font-semibold text-gray-400 uppercase mb-1">Promotional Content (Amazon Diwali Offer)</label>
+                        <textarea readonly rows="3" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-600">Amazon Diwali Mega Sale! Flat 50% cashback on smartphones & electronics. Grab deal now: https://amzn.in/diwali-sale</textarea>
                     </div>
 
                     <!-- Progress Bar -->
                     <div id="task-progress-box" class="hidden space-y-1">
                         <div class="flex justify-between text-[10px] text-gray-600 font-medium">
-                            <span id="progress-status-text">Processing SMS...</span>
+                            <span id="progress-status-text">Connecting...</span>
                             <span id="progress-percent">0%</span>
                         </div>
                         <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
@@ -142,68 +125,173 @@
                         </div>
                     </div>
 
-                    <button id="send-sms-btn" onclick="startSmsTask()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md text-xs transition-all active:scale-[0.98]">
-                        Send Promotional SMS (Cost: ₹0.50)
+                    <button id="send-sms-btn" onclick="startSmsTask()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md text-xs transition-all active:scale-[0.98]">
+                        Send Promotional SMS (Charge: ₹0.50)
                     </button>
                 </div>
             </div>
+        </div>
 
-            <!-- HISTORY SECTION -->
-            <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-bold text-xs text-gray-800">📊 Transaction History</h3>
-                    <button onclick="loadUserHistory()" class="text-[11px] text-blue-600 hover:underline font-semibold">Refresh</button>
+        <!-- VIEW 2: WALLET SECTION (Opened from 3-line menu) -->
+        <div id="view-wallet" class="p-4 space-y-4 flex-1 overflow-y-auto hidden">
+            <!-- 1. SMS Wallet (With Bonus Balance Line inside) -->
+            <div class="bg-white border border-blue-200 rounded-2xl p-4 shadow-xs">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-bold text-gray-500 uppercase">SMS Wallet Balance</p>
+                        <h3 id="bal-sms" class="text-2xl font-bold text-blue-700 mt-1">₹0.00</h3>
+                    </div>
+                    <button onclick="openAddFundModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded-xl font-semibold shadow-xs">+ Add Fund</button>
                 </div>
-
-                <div class="flex bg-gray-100 p-1 rounded-xl mb-3 text-[11px] font-semibold">
-                    <button onclick="switchHistoryTab('sms')" id="tab-sms" class="flex-1 py-1.5 bg-white text-blue-700 rounded-lg shadow-xs transition-all">SMS</button>
-                    <button onclick="switchHistoryTab('funds')" id="tab-funds" class="flex-1 py-1.5 text-gray-600 rounded-lg transition-all">Funds</button>
-                    <button onclick="switchHistoryTab('withdrawals')" id="tab-withdrawals" class="flex-1 py-1.5 text-gray-600 rounded-lg transition-all">Payouts</button>
+                <div class="mt-3 pt-2.5 border-t border-blue-50 flex justify-between items-center text-xs">
+                    <span class="text-gray-500 font-medium">🎁 Included Bonus Balance:</span>
+                    <span id="bal-bonus-inline" class="font-bold text-sky-600">₹0.00</span>
                 </div>
+            </div>
 
-                <div class="overflow-x-auto max-h-36">
-                    <div id="history-sms" class="space-y-2"><p class="text-[11px] text-gray-400 text-center py-3">Loading SMS logs...</p></div>
-                    <div id="history-funds" class="space-y-2 hidden"><p class="text-[11px] text-gray-400 text-center py-3">Loading fund requests...</p></div>
-                    <div id="history-withdrawals" class="space-y-2 hidden"><p class="text-[11px] text-gray-400 text-center py-3">Loading withdrawal logs...</p></div>
+            <!-- 2. Earning Wallet -->
+            <div class="bg-white border border-indigo-200 rounded-2xl p-4 shadow-xs">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-gray-500 uppercase">Earning Wallet (Withdrawable)</p>
+                        <h3 id="bal-earning" class="text-2xl font-bold text-indigo-700 mt-1">₹0.00</h3>
+                    </div>
+                    <button onclick="openWithdrawModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1.5 rounded-xl font-semibold shadow-xs">Withdraw</button>
+                </div>
+                <p class="text-[10px] text-gray-400 mt-2">Min Withdrawal: ₹5,000 | Max: ₹50,000</p>
+            </div>
+
+            <!-- 3. Bonus Wallet Details -->
+            <div class="bg-sky-50 border border-sky-200 rounded-2xl p-4">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-sky-800 uppercase">Bonus Wallet</p>
+                        <h3 id="bal-bonus" class="text-xl font-bold text-sky-700 mt-1">₹0.00</h3>
+                    </div>
+                    <span class="text-[10px] bg-sky-200 text-sky-800 px-2.5 py-1 rounded-full font-bold">Task Use Only</span>
+                </div>
+                <p class="text-[11px] text-sky-700 mt-2">Bonus balance cannot be withdrawn directly, it is automatically used for sending SMS tasks.</p>
+            </div>
+        </div>
+
+        <!-- VIEW 3: TXN HISTORY (With 4 Toggle Switches & Status Colors) -->
+        <div id="view-history" class="p-4 space-y-4 flex-1 overflow-y-auto hidden">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-sm text-gray-800">Transaction History</h3>
+                <button onclick="loadUserHistory()" class="text-xs text-blue-600 font-semibold hover:underline">Refresh</button>
+            </div>
+
+            <!-- 4-Way Toggle Switch -->
+            <div class="grid grid-cols-4 bg-gray-200 p-1 rounded-xl text-[11px] font-semibold gap-1">
+                <button onclick="switchHistoryTab('sms')" id="tab-sms" class="py-1.5 bg-white text-blue-700 rounded-lg shadow-xs transition-all">Send SMS</button>
+                <button onclick="switchHistoryTab('withdrawals')" id="tab-withdrawals" class="py-1.5 text-gray-600 rounded-lg transition-all">Withdraw</button>
+                <button onclick="switchHistoryTab('funds')" id="tab-funds" class="py-1.5 text-gray-600 rounded-lg transition-all">Add Fund</button>
+                <button onclick="switchHistoryTab('bonus')" id="tab-bonus" class="py-1.5 text-gray-600 rounded-lg transition-all">Bonus</button>
+            </div>
+
+            <!-- History Lists -->
+            <div class="space-y-2.5">
+                <div id="history-sms" class="space-y-2"><p class="text-xs text-gray-400 text-center py-6">Loading SMS logs...</p></div>
+                <div id="history-withdrawals" class="space-y-2 hidden"><p class="text-xs text-gray-400 text-center py-6">Loading withdrawals...</p></div>
+                <div id="history-funds" class="space-y-2 hidden"><p class="text-xs text-gray-400 text-center py-6">Loading fund requests...</p></div>
+                <div id="history-bonus" class="space-y-2 hidden">
+                    <div class="bg-white border border-sky-100 p-3 rounded-xl text-xs flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-gray-800">Sign-Up Welcome Bonus</p>
+                            <p class="text-[10px] text-gray-500">Credited on account creation</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-emerald-600">+₹100.00</span>
+                            <span class="block text-[9px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold mt-1">Credited</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- VIEW 4: KYC & BANK DETAILS (Opened from 3-line menu) -->
+        <div id="view-kyc" class="p-4 space-y-4 flex-1 overflow-y-auto hidden">
+            <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs space-y-3">
+                <h3 class="font-bold text-sm text-blue-800 border-b border-gray-100 pb-2">🪪 KYC & Bank Verification</h3>
+                
+                <div>
+                    <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Aadhaar Card Number</label>
+                    <input type="text" id="kyc-aadhaar" maxlength="12" placeholder="Enter 12-digit Aadhaar Number" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">PAN Card Number</label>
+                    <input type="text" id="kyc-pan" maxlength="10" placeholder="Enter 10-character PAN" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono uppercase">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Bank Account Details (Acc No | IFSC | Name)</label>
+                    <textarea id="kyc-bank" rows="2" placeholder="e.g. 329010004521 | SBIN0001234 | Rahul Kumar" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono"></textarea>
+                </div>
+
+                <button onclick="saveKycDetails()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs transition-all">Save KYC & Bank Details</button>
+            </div>
+        </div>
+
+        <!-- VIEW 5: PROFILE SETTINGS (Opened from 3-line menu) -->
+        <div id="view-profile" class="p-4 space-y-4 flex-1 overflow-y-auto hidden">
+            <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs space-y-3">
+                <div class="text-center mb-3">
+                    <div id="profile-avatar" class="w-16 h-16 bg-blue-100 text-blue-700 font-bold text-xl rounded-full mx-auto flex items-center justify-center mb-2 shadow-inner">U</div>
+                    <h4 id="profile-name-disp" class="font-bold text-sm text-gray-800">User Name</h4>
+                    <p id="profile-mobile-disp" class="text-[11px] text-gray-500 font-mono">+91 XXXXX XXXXX</p>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Update Full Name</label>
+                    <input type="text" id="edit-name" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Change Mobile Number</label>
+                    <input type="tel" id="edit-mobile" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">New Password</label>
+                    <input type="password" id="edit-password" placeholder="Leave blank to keep unchanged" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+                </div>
+
+                <button onclick="updateProfile()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs transition-all">Update Profile</button>
+            </div>
+        </div>
+
     </div>
 
-    <!-- PROFILE DRAWER (Android Navigation Drawer Style) -->
-    <div id="profile-drawer" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden flex justify-start">
-        <div class="bg-white w-72 h-full shadow-2xl p-5 flex flex-col justify-between overflow-y-auto">
+    <!-- 3-LINE NAVIGATION DRAWER -->
+    <div id="nav-drawer" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden flex justify-start">
+        <div class="bg-white w-72 h-full shadow-2xl flex flex-col justify-between">
             <div>
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="font-bold text-base text-blue-800">Profile Settings</h3>
-                    <button onclick="toggleProfileDrawer()" class="text-gray-500 hover:text-gray-800 text-lg font-bold">✕</button>
+                <!-- Drawer Header -->
+                <div class="bg-blue-700 text-white p-5 flex items-center justify-between">
+                    <div>
+                        <h3 id="drawer-name" class="font-bold text-base">User Name</h3>
+                        <p id="drawer-mobile" class="text-xs opacity-80 font-mono">+91 XXXXX XXXXX</p>
+                    </div>
+                    <button onclick="toggleDrawer()" class="text-white text-lg font-bold p-1">✕</button>
                 </div>
 
-                <div class="space-y-3">
-                    <div class="text-center mb-4">
-                        <div id="profile-avatar" class="w-16 h-16 bg-blue-100 text-blue-700 font-bold text-xl rounded-full mx-auto flex items-center justify-center mb-2 shadow-inner">U</div>
-                        <h4 id="profile-name-disp" class="font-bold text-sm text-gray-800">User Name</h4>
-                        <p id="profile-mobile-disp" class="text-[11px] text-gray-500 font-mono">+91 XXXXX XXXXX</p>
-                    </div>
-
-                    <hr class="border-gray-100">
-
-                    <div>
-                        <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Update Name</label>
-                        <input type="text" id="edit-name" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Change Mobile Number</label>
-                        <input type="tel" id="edit-mobile" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">New Password</label>
-                        <input type="password" id="edit-password" placeholder="Leave blank to keep same" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs">
-                    </div>
-                    <button onclick="updateProfile()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs transition-all">Save Changes</button>
-                </div>
+                <!-- Drawer Menu Items -->
+                <nav class="p-3 space-y-1 text-sm font-medium">
+                    <button onclick="navigate('home')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-gray-700 hover:text-blue-700 transition-all">
+                        <span>🏠</span><span>Home (SMS Task)</span>
+                    </button>
+                    <button onclick="navigate('wallet')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-gray-700 hover:text-blue-700 transition-all">
+                        <span>💳</span><span>Wallet</span>
+                    </button>
+                    <button onclick="navigate('history')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-gray-700 hover:text-blue-700 transition-all">
+                        <span>📊</span><span>Txn History</span>
+                    </button>
+                    <button onclick="navigate('kyc')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-gray-700 hover:text-blue-700 transition-all">
+                        <span>🪪</span><span>KYC & Bank Details</span>
+                    </button>
+                    <button onclick="navigate('profile')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-gray-700 hover:text-blue-700 transition-all">
+                        <span>👤</span><span>Profile Settings</span>
+                    </button>
+                </nav>
             </div>
-            <div class="text-center text-[10px] text-gray-400">Fintech Platform v2.8</div>
+            <div class="p-4 border-t border-gray-100 text-center text-[10px] text-gray-400">Fintech SMS App v3.0</div>
         </div>
     </div>
 
@@ -248,16 +336,8 @@
                     <input type="number" id="withdraw-amount" placeholder="Enter amount" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-gray-600 uppercase mb-1">Bank Account Number</label>
-                    <input type="text" id="bank-acc" placeholder="Account Number" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-semibold text-gray-600 uppercase mb-1">IFSC Code</label>
-                    <input type="text" id="bank-ifsc" placeholder="IFSC Code" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-semibold text-gray-600 uppercase mb-1">Account Holder Name</label>
-                    <input type="text" id="bank-holder" placeholder="Name as per bank" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+                    <label class="block text-[10px] font-semibold text-gray-600 uppercase mb-1">Bank Details (Saved from KYC)</label>
+                    <input type="text" id="withdraw-bank-info" placeholder="Acc No | IFSC | Holder Name" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono">
                 </div>
             </div>
 
@@ -282,16 +362,14 @@
         let currentUser = null;
         let countdownInterval = null;
 
-        // 3 Seconds Fake Round-Round Loading Utility
         function simulateLoading(text, callback) {
             const loader = document.getElementById('global-loader');
             document.getElementById('loader-text').innerText = text;
             loader.classList.remove('hidden');
-
             setTimeout(() => {
                 loader.classList.add('hidden');
                 if (callback) callback();
-            }, 3000); // Exactly 3 seconds loading
+            }, 3000);
         }
 
         function switchTab(tab) {
@@ -320,31 +398,30 @@
             }
         }
 
+        function toggleDrawer() {
+            document.getElementById('nav-drawer').classList.toggle('hidden');
+        }
+
+        function navigate(view) {
+            toggleDrawer();
+            const views = ['home', 'wallet', 'history', 'kyc', 'profile'];
+            const titles = { home: 'Home', wallet: 'My Wallets', history: 'Transaction History', kyc: 'KYC & Bank Details', profile: 'Profile Settings' };
+            
+            views.forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            document.getElementById('app-bar-title').innerText = titles[view];
+
+            if (view === 'history') loadUserHistory();
+        }
+
         function switchHistoryTab(type) {
-            const smsDiv = document.getElementById('history-sms');
-            const fundsDiv = document.getElementById('history-funds');
-            const withdrawDiv = document.getElementById('history-withdrawals');
-            const tabSms = document.getElementById('tab-sms');
-            const tabFunds = document.getElementById('tab-funds');
-            const tabWithdraw = document.getElementById('tab-withdrawals');
-
-            smsDiv.classList.add('hidden');
-            fundsDiv.classList.add('hidden');
-            withdrawDiv.classList.add('hidden');
-            tabSms.className = "flex-1 py-1.5 text-gray-600 rounded-lg transition-all";
-            tabFunds.className = "flex-1 py-1.5 text-gray-600 rounded-lg transition-all";
-            tabWithdraw.className = "flex-1 py-1.5 text-gray-600 rounded-lg transition-all";
-
-            if (type === 'sms') {
-                smsDiv.classList.remove('hidden');
-                tabSms.className = "flex-1 py-1.5 bg-white text-blue-700 rounded-lg shadow-xs transition-all font-semibold";
-            } else if (type === 'funds') {
-                fundsDiv.classList.remove('hidden');
-                tabFunds.className = "flex-1 py-1.5 bg-white text-blue-700 rounded-lg shadow-xs transition-all font-semibold";
-            } else if (type === 'withdrawals') {
-                withdrawDiv.classList.remove('hidden');
-                tabWithdraw.className = "flex-1 py-1.5 bg-white text-blue-700 rounded-lg shadow-xs transition-all font-semibold";
-            }
+            const tabs = ['sms', 'withdrawals', 'funds', 'bonus'];
+            tabs.forEach(t => {
+                document.getElementById(`history-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).className = "py-1.5 text-gray-600 rounded-lg transition-all";
+            });
+            document.getElementById(`history-${type}`).classList.remove('hidden');
+            document.getElementById(`tab-${type}`).className = "py-1.5 bg-white text-blue-700 rounded-lg shadow-xs transition-all font-bold";
         }
 
         function showPopup(type, title, message) {
@@ -373,7 +450,7 @@
             const mobile = document.getElementById('reg-mobile').value;
             const password = document.getElementById('reg-password').value;
 
-            simulateLoading("Registering account...", async () => {
+            simulateLoading("Creating Account...", async () => {
                 try {
                     const res = await fetch('/api/register', {
                         method: 'POST',
@@ -382,10 +459,10 @@
                     });
                     const data = await res.json();
                     if (res.ok) {
-                        showPopup('success', 'Registration Successful!', 'Your account has been created with ₹100 bonus. Please login now.');
+                        showPopup('success', 'Registration Successful!', 'Account created with ₹100 bonus. Please login now.');
                         switchTab('login');
                     } else {
-                        showPopup('error', 'Registration Failed', data.error || 'Something went wrong.');
+                        showPopup('error', 'Registration Failed', data.error || 'Error creating account.');
                     }
                 } catch (err) {
                     showPopup('error', 'Network Error', 'Unable to connect to server.');
@@ -398,7 +475,7 @@
             const mobile = document.getElementById('login-mobile').value;
             const password = document.getElementById('login-password').value;
 
-            simulateLoading("Authenticating...", async () => {
+            simulateLoading("Logging in...", async () => {
                 try {
                     const res = await fetch('/api/login', {
                         method: 'POST',
@@ -408,13 +485,13 @@
                     const data = await res.json();
                     if (res.ok) {
                         currentUser = data.user;
-                        showPopup('success', 'Login Successful!', 'Welcome back to your dashboard.');
+                        showPopup('success', 'Login Successful!', 'Welcome back!');
                         setTimeout(() => {
                             closePopup();
                             loadDashboard();
                         }, 1000);
                     } else {
-                        showPopup('error', 'Login Failed', data.error || 'Wrong password or mobile number.');
+                        showPopup('error', 'Login Failed', data.error || 'Invalid credentials.');
                     }
                 } catch (err) {
                     showPopup('error', 'Network Error', 'Unable to connect to server.');
@@ -426,18 +503,30 @@
             document.getElementById('auth-container').classList.add('hidden');
             document.getElementById('dashboard-container').classList.remove('hidden');
             
-            document.getElementById('bal-sms').innerText = `₹${currentUser.sms_wallet.toFixed(2)}`;
-            document.getElementById('bal-earning').innerText = `₹${currentUser.earning_wallet.toFixed(2)}`;
-            document.getElementById('bal-bonus').innerText = `₹${currentUser.bonus_wallet.toFixed(2)}`;
+            document.getElementById('home-user-name').innerText = currentUser.name;
+            document.getElementById('drawer-name').innerText = currentUser.name;
+            document.getElementById('drawer-mobile').innerText = currentUser.mobile;
+
+            updateWalletUI();
 
             document.getElementById('profile-name-disp').innerText = currentUser.name;
             document.getElementById('profile-mobile-disp').innerText = currentUser.mobile;
             document.getElementById('profile-avatar').innerText = currentUser.name.charAt(0).toUpperCase();
-
             document.getElementById('edit-name').value = currentUser.name;
             document.getElementById('edit-mobile').value = currentUser.mobile;
 
-            loadUserHistory();
+            // Load KYC details
+            document.getElementById('kyc-aadhaar').value = currentUser.aadhaar_no || '';
+            document.getElementById('kyc-pan').value = currentUser.pan_no || '';
+            document.getElementById('kyc-bank').value = currentUser.bank_details || '';
+            document.getElementById('withdraw-bank-info').value = currentUser.bank_details || '';
+        }
+
+        function updateWalletUI() {
+            document.getElementById('bal-sms').innerText = `₹${currentUser.sms_wallet.toFixed(2)}`;
+            document.getElementById('bal-bonus-inline').innerText = `₹${currentUser.bonus_wallet.toFixed(2)}`;
+            document.getElementById('bal-earning').innerText = `₹${currentUser.earning_wallet.toFixed(2)}`;
+            document.getElementById('bal-bonus').innerText = `₹${currentUser.bonus_wallet.toFixed(2)}`;
         }
 
         async function loadUserHistory() {
@@ -445,39 +534,48 @@
                 const res = await fetch(`/api/history?userId=${currentUser.id}`);
                 const data = await res.json();
                 if (res.ok) {
+                    // 1. Send SMS Logs
                     const smsContainer = document.getElementById('history-sms');
-                    smsContainer.innerHTML = data.smsLogs.length === 0 ? `<p class="text-[11px] text-gray-400 text-center py-3">No SMS logs found.</p>` :
+                    smsContainer.innerHTML = data.smsLogs.length === 0 ? `<p class="text-xs text-gray-400 text-center py-6">No SMS logs found.</p>` :
                         data.smsLogs.map(log => `
-                            <div class="bg-gray-50 border border-gray-100 p-2 rounded-xl text-[11px] flex justify-between items-center">
+                            <div class="bg-white border border-gray-100 p-3 rounded-xl text-xs flex justify-between items-center shadow-2xs">
                                 <div>
-                                    <p class="font-semibold text-gray-700">To: ${log.recipient_number}</p>
-                                    <p class="text-[9px] text-gray-500 truncate max-w-[150px]">${log.message_text}</p>
+                                    <p class="font-bold text-gray-800">To: ${log.recipient_number}</p>
+                                    <p class="text-[10px] text-gray-500 truncate max-w-[160px]">${log.message_text}</p>
+                                    <span class="text-[9px] text-gray-400">${log.created_at}</span>
                                 </div>
-                                <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold text-[9px]">${log.status}</span>
+                                <div class="text-right">
+                                    <span class="font-bold text-red-600 text-[11px]">-₹0.50</span>
+                                    <span class="block bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold text-[9px] mt-1">${log.status}</span>
+                                </div>
                             </div>
                         `).join('');
 
-                    const fundsContainer = document.getElementById('history-funds');
-                    fundsContainer.innerHTML = data.fundRequests.length === 0 ? `<p class="text-[11px] text-gray-400 text-center py-3">No fund requests found.</p>` :
-                        data.fundRequests.map(fund => `
-                            <div class="bg-gray-50 border border-gray-100 p-2 rounded-xl text-[11px] flex justify-between items-center">
-                                <div>
-                                    <p class="font-semibold text-gray-700">₹${fund.amount} (UTR)</p>
-                                    <p class="text-[9px] text-gray-500 font-mono">${fund.utr_number}</p>
-                                </div>
-                                <span class="px-2 py-0.5 rounded-full font-bold text-[9px] ${fund.status === 'Approved' ? 'bg-emerald-100 text-emerald-700' : fund.status === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${fund.status}</span>
-                            </div>
-                        `).join('');
-
+                    // 2. Withdrawals
                     const withdrawContainer = document.getElementById('history-withdrawals');
-                    withdrawContainer.innerHTML = data.withdrawals.length === 0 ? `<p class="text-[11px] text-gray-400 text-center py-3">No withdrawals found.</p>` :
+                    withdrawContainer.innerHTML = data.withdrawals.length === 0 ? `<p class="text-xs text-gray-400 text-center py-6">No withdrawals found.</p>` :
                         data.withdrawals.map(w => `
-                            <div class="bg-gray-50 border border-gray-100 p-2 rounded-xl text-[11px] flex justify-between items-center">
+                            <div class="bg-white border border-gray-100 p-3 rounded-xl text-xs flex justify-between items-center shadow-2xs">
                                 <div>
-                                    <p class="font-semibold text-gray-700">Payout: ₹${w.amount}</p>
-                                    <p class="text-[9px] text-gray-500 truncate max-w-[150px]">Bank: ${w.payment_info}</p>
+                                    <p class="font-bold text-gray-800">Payout: ₹${w.amount}</p>
+                                    <p class="text-[10px] text-gray-500 truncate max-w-[160px]">${w.payment_info}</p>
+                                    <span class="text-[9px] text-gray-400">${w.created_at}</span>
                                 </div>
-                                <span class="px-2 py-0.5 rounded-full font-bold text-[9px] ${w.status === 'Approved' ? 'bg-emerald-100 text-emerald-700' : w.status === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${w.status}</span>
+                                <span class="px-2.5 py-1 rounded-full font-bold text-[10px] ${w.status === 'Approved' ? 'bg-emerald-100 text-emerald-700' : w.status === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${w.status}</span>
+                            </div>
+                        `).join('');
+
+                    // 3. Add Funds
+                    const fundsContainer = document.getElementById('history-funds');
+                    fundsContainer.innerHTML = data.fundRequests.length === 0 ? `<p class="text-xs text-gray-400 text-center py-6">No fund requests found.</p>` :
+                        data.fundRequests.map(fund => `
+                            <div class="bg-white border border-gray-100 p-3 rounded-xl text-xs flex justify-between items-center shadow-2xs">
+                                <div>
+                                    <p class="font-bold text-gray-800">Add Fund: ₹${fund.amount}</p>
+                                    <p class="text-[10px] text-gray-500 font-mono">UTR: ${fund.utr_number}</p>
+                                    <span class="text-[9px] text-gray-400">${fund.created_at}</span>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full font-bold text-[10px] ${fund.status === 'Approved' ? 'bg-emerald-100 text-emerald-700' : fund.status === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${fund.status}</span>
                             </div>
                         `).join('');
                 }
@@ -490,16 +588,12 @@
             currentUser = null;
             document.getElementById('dashboard-container').classList.add('hidden');
             document.getElementById('auth-container').classList.remove('hidden');
-            showPopup('success', 'Logged Out', 'You have been safely logged out.');
-        }
-
-        function toggleProfileDrawer() {
-            document.getElementById('profile-drawer').classList.toggle('hidden');
+            showPopup('success', 'Logged Out', 'Safely logged out.');
         }
 
         async function startSmsTask() {
             if (currentUser.sms_wallet < 0.50 && currentUser.bonus_wallet < 0.50) {
-                showPopup('error', 'Low Balance', 'Please add funds to your SMS wallet to continue tasks.');
+                showPopup('error', 'Insufficient Balance', 'Please add funds in Wallet to send SMS.');
                 return;
             }
 
@@ -523,9 +617,9 @@
                 progressBar.style.width = `${percent}%`;
                 percentText.innerText = `${percent}%`;
 
-                if (percent < 40) statusText.innerText = "Connecting to Gateway...";
-                else if (percent < 80) statusText.innerText = "Broadcasting SMS...";
-                else statusText.innerText = "Verifying Delivery...";
+                if (percent < 40) statusText.innerText = "Connecting Gateway...";
+                else if (percent < 80) statusText.innerText = "Sending Promotional SMS...";
+                else statusText.innerText = "Confirming Delivery...";
 
                 if (elapsed >= duration) {
                     clearInterval(timer);
@@ -535,7 +629,7 @@
         }
 
         async function completeTask() {
-            simulateLoading("Finalizing SMS Task...", async () => {
+            simulateLoading("Crediting Reward...", async () => {
                 try {
                     const res = await fetch('/api/task/complete', {
                         method: 'POST',
@@ -547,18 +641,18 @@
                         currentUser.sms_wallet = data.sms_wallet;
                         currentUser.earning_wallet = data.earning_wallet;
                         currentUser.bonus_wallet = data.bonus_wallet;
+                        updateWalletUI();
 
-                        document.getElementById('bal-sms').innerText = `₹${currentUser.sms_wallet.toFixed(2)}`;
-                        document.getElementById('bal-earning').innerText = `₹${currentUser.earning_wallet.toFixed(2)}`;
-                        document.getElementById('bal-bonus').innerText = `₹${currentUser.bonus_wallet.toFixed(2)}`;
+                        // Generate new random masked mobile number
+                        const randomMid = Math.floor(10 + Math.random() * 89);
+                        document.getElementById('task-mobile').value = `+91 ${randomMid}XXXXXX10`;
 
-                        showPopup('success', 'SMS Sent Successfully!', '₹0.50 deducted and ₹1.50 added to your earning wallet.');
-                        loadUserHistory();
+                        showPopup('success', 'SMS Delivered!', '₹0.50 deducted & ₹1.50 added to Earning Wallet.');
                     } else {
-                        showPopup('error', 'Task Failed', data.error || 'Could not complete task.');
+                        showPopup('error', 'Failed', data.error || 'Could not complete task.');
                     }
                 } catch (err) {
-                    showPopup('error', 'Error', 'Network error occurred.');
+                    showPopup('error', 'Error', 'Network error.');
                 } finally {
                     const btn = document.getElementById('send-sms-btn');
                     btn.disabled = false;
@@ -605,7 +699,7 @@
                 return;
             }
 
-            simulateLoading("Verifying UTR & Adding Funds...", async () => {
+            simulateLoading("Submitting UTR...", async () => {
                 try {
                     const res = await fetch('/api/fund/add', {
                         method: 'POST',
@@ -614,10 +708,9 @@
                     });
                     if (res.ok) {
                         closeAddFundModal();
-                        showPopup('success', 'Fund Request Submitted', 'Your UTR is submitted and pending admin approval.');
-                        loadUserHistory();
+                        showPopup('success', 'Fund Request Submitted', 'Pending admin approval.');
                     } else {
-                        showPopup('error', 'Submission Failed', 'Could not submit fund request.');
+                        showPopup('error', 'Failed', 'Could not submit request.');
                     }
                 } catch (err) {
                     showPopup('error', 'Error', 'Network error.');
@@ -634,35 +727,59 @@
 
         async function submitWithdrawal() {
             const amount = parseFloat(document.getElementById('withdraw-amount').value);
-            const acc = document.getElementById('bank-acc').value;
-            const ifsc = document.getElementById('bank-ifsc').value;
-            const holder = document.getElementById('bank-holder').value;
+            const bankInfo = document.getElementById('withdraw-bank-info').value;
 
             if (!amount || amount < 5000 || amount > 50000) {
                 alert('Withdrawal limit is ₹5,000 to ₹50,000');
                 return;
             }
-            if (!acc || !ifsc || !holder) {
-                alert('Please fill all bank details correctly.');
+            if (!bankInfo || bankInfo.trim() === '') {
+                alert('Please enter bank details or save them in KYC menu.');
                 return;
             }
 
-            simulateLoading("Processing Payout Request...", async () => {
+            simulateLoading("Processing Payout...", async () => {
                 try {
                     const res = await fetch('/api/withdrawal/request', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId: currentUser.id, amount, paymentInfo: `${acc} | ${ifsc} | ${holder}` })
+                        body: JSON.stringify({ userId: currentUser.id, amount, paymentInfo: bankInfo })
                     });
                     const data = await res.json();
                     if (res.ok) {
                         currentUser.earning_wallet = data.new_earning;
-                        document.getElementById('bal-earning').innerText = `₹${currentUser.earning_wallet.toFixed(2)}`;
+                        updateWalletUI();
                         closeWithdrawModal();
-                        showPopup('success', 'Withdrawal Requested', 'Your payout request has been sent for admin review.');
-                        loadUserHistory();
+                        showPopup('success', 'Payout Requested', 'Withdrawal request submitted.');
                     } else {
-                        showPopup('error', 'Request Failed', data.error || 'Insufficient balance or limit exceeded.');
+                        showPopup('error', 'Failed', data.error || 'Insufficient balance.');
+                    }
+                } catch (err) {
+                    showPopup('error', 'Error', 'Network error.');
+                }
+            });
+        }
+
+        async function saveKycDetails() {
+            const aadhaar = document.getElementById('kyc-aadhaar').value;
+            const pan = document.getElementById('kyc-pan').value;
+            const bank = document.getElementById('kyc-bank').value;
+
+            simulateLoading("Saving KYC Details...", async () => {
+                try {
+                    const res = await fetch('/api/kyc/update', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: currentUser.id, aadhaar, pan, bank })
+                    });
+                    if (res.ok) {
+                        currentUser.aadhaar_no = aadhaar;
+                        currentUser.pan_no = pan;
+                        currentUser.bank_details = bank;
+                        document.getElementById('withdraw-bank-info').value = bank;
+                        showPopup('success', 'KYC Saved!', 'Your Aadhaar, PAN, and Bank details are updated.');
+                    } else {
+                        showPopup('error', 'Failed', 'Could not save KYC details.');
                     }
                 } catch (err) {
                     showPopup('error', 'Error', 'Network error.');
@@ -686,10 +803,9 @@
                         currentUser.name = name;
                         currentUser.mobile = mobile;
                         loadDashboard();
-                        toggleProfileDrawer();
-                        showPopup('success', 'Profile Updated', 'Your profile details were updated successfully.');
+                        showPopup('success', 'Profile Updated', 'Details updated successfully.');
                     } else {
-                        showPopup('error', 'Update Failed', 'Could not update profile.');
+                        showPopup('error', 'Failed', 'Could not update profile.');
                     }
                 } catch (err) {
                     showPopup('error', 'Error', 'Network error.');
