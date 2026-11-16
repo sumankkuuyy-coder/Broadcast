@@ -77,7 +77,7 @@ export default {
 
         await env.DB.prepare(
           "INSERT INTO sms_logs (user_id, recipient_number, message_text, status) VALUES (?, ?, ?, ?)"
-        ).bind(userId, "+919876543210", "Amazon Diwali Special Offer! Flat 50% cashback on electronics.", "Sent").run();
+        ).bind(userId, "+9198XXXXXX10", "Amazon Diwali Mega Sale! Flat 50% cashback.", "Sent").run();
 
         return jsonResponse({ success: true, sms_wallet: smsWallet, bonus_wallet: bonusWallet, earning_wallet: earningWallet }, 200, corsHeaders);
       }
@@ -118,7 +118,7 @@ export default {
         return jsonResponse({ success: true, new_earning: newEarning, message: "Withdrawal requested successfully" }, 200, corsHeaders);
       }
 
-      // 6. HISTORY API (Fetch logs)
+      // 6. HISTORY API
       if (path === "/api/history" && method === "GET") {
         const userId = url.searchParams.get("userId");
         if (!userId) {
@@ -137,7 +137,17 @@ export default {
         }, 200, corsHeaders);
       }
 
-      // 7. UPDATE PROFILE API
+      // 7. KYC & BANK UPDATE API
+      if (path === "/api/kyc/update" && method === "POST") {
+        const { userId, aadhaar, pan, bank } = await request.json();
+        await env.DB.prepare(
+          "UPDATE users SET aadhaar_no = ?, pan_no = ?, bank_details = ? WHERE id = ?"
+        ).bind(aadhaar, pan, bank, userId).run();
+
+        return jsonResponse({ success: true, message: "KYC updated successfully" }, 200, corsHeaders);
+      }
+
+      // 8. UPDATE PROFILE API
       if (path === "/api/profile/update" && method === "POST") {
         const { userId, name, mobile, password } = await request.json();
         
