@@ -28,7 +28,7 @@ export default {
         }
 
         await env.DB.prepare(
-          "INSERT INTO users (name, mobile, password, sms_wallet, earning_wallet, bonus_wallet) VALUES (?, ?, ?, 100.0, 0.0, 100.0)"
+          "INSERT INTO users (name, mobile, password, sms_wallet, earning_wallet, bonus_wallet, role) VALUES (?, ?, ?, 100.0, 0.0, 100.0, 'user')"
         ).bind(name, mobile, password).run();
 
         return jsonResponse({ success: true, message: "Registration successful" }, 200, corsHeaders);
@@ -152,7 +152,7 @@ export default {
           ).bind(body.bank_acc, body.bank_ifsc, body.bank_holder, userId).run();
         }
 
-        return jsonResponse({ success: true, message: "KYC step updated" }, 200, corsHeaders);
+        return jsonResponse({ success: true, message: "KYC updated successfully" }, 200, corsHeaders);
       }
 
       // 8. UPDATE PROFILE & PHOTO API
@@ -170,6 +170,39 @@ export default {
         }
 
         return jsonResponse({ success: true, message: "Profile updated successfully" }, 200, corsHeaders);
+      }
+
+      // 9. ADMIN: FETCH ALL PENDING REQUESTS
+      if (path === "/api/admin/requests" && method === "GET") {
+        const funds = await env.DB.prepare("SELECT a.*, u.name, u.mobile FROM add_fund_requests a JOIN users u ON a.user_id = u.id ORDER BY a.id DESC").all();
+        const withdrawals = await env.DB.prepare("SELECT w.*, u.name, u.mobile FROM withdrawals w JOIN users u ON w.user_id = u.id ORDER BY w.id DESC").all();
+
+        return jsonResponse({
+          success: true,
+          funds: funds.results || [],
+          withdrawals: withdrawals.results || []
+        }, 200, corsHeaders);
+      }
+
+      // 10. ADMIN: APPROVE / REJECT ACTION
+      if (path === "/api/admin/action" && method === "POST") {
+        const { type, id, action } = await request.json();
+
+        if (type === 'fund') {
+          const fundReq = await env.DB.prepare("SELECT * FROM add_fund_requests WHERE id = ?").bind(id).first();
+          if (fundReq && fundReq.status === 'Pending' && action === 'Approved') {
+            await env.DB.prepare("UPDATE users SET sms_wallet = sms_wallet + ? WHERE id = ?").bind(fundReq.amount, fundReq.user_id).run();
+          }
+          await env.DB.prepare("UPDATE add_fund_requests SET status = ? WHERE id = ?").bind(action, id).run();
+        } else if (type === 'withdrawal') {
+          const drawReq = await env.DB.prepare("SELECT * FROM withdrawals WHERE id = ?").bind(id).first();
+          if (drawReq && drawReq.status === 'Pending' && action === 'Rejected') {
+            await env.DB.prepare("UPDATE users SET earning_wallet = earning_wallet + ? WHERE id = ?").bind(drawReq.amount, drawReq.user_id).run();
+          }
+          await env.DB.prepare("UPDATE withdrawals SET status = ? WHERE id = ?").bind(action, id).run();
+        }
+
+        return jsonResponse({ success: true, message: `Request ${action}` }, 200, corsHeaders);
       }
 
       // Default: Serve static assets
