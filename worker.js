@@ -1,163 +1,159 @@
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
+    const method = request.method;
 
+    // CORS Headers for smooth communication
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     };
 
-    if (request.method === "OPTIONS") {
+    if (method === "OPTIONS") {
       return new Response(null, { headers: corsHeaders });
     }
 
     try {
-      // 1. REGISTER
-      if (path === "/api/register" && request.method === "POST") {
+      // 1. REGISTER API
+      if (path === "/api/register" && method === "POST") {
         const { name, mobile, password } = await request.json();
         if (!name || !mobile || !password) {
-          return Response.json({ error: "All fields are required" }, { status: 400, headers: corsHeaders });
+          return jsonResponse({ error: "All fields are required" }, 400, corsHeaders);
         }
 
-        const existing = await env.DB.prepare("SELECT * FROM users WHERE mobile = ?").bind(mobile).first();
+        // Check if mobile already exists
+        const existing = await env.DB.prepare("SELECT id FROM users WHERE mobile = ?").bind(mobile).first();
         if (existing) {
-          return Response.json({ error: "Mobile number already registered" }, { status: 400, headers: corsHeaders });
+          return jsonResponse({ error: "Mobile number already registered" }, 400, corsHeaders);
         }
 
+        // Insert new user with ₹100 sign-up bonus in sms_wallet & bonus_wallet
         await env.DB.prepare(
-          "INSERT INTO users (name, mobile, password, sms_wallet, earning_wallet, role) VALUES (?, ?, ?, 0.0, 0.0, 'user')"
+          "INSERT INTO users (name, mobile, password, sms_wallet, earning_wallet, bonus_wallet) VALUES (?, ?, ?, 100.0, 0.0, 100.0)"
         ).bind(name, mobile, password).run();
 
-        return Response.json({ success: true, message: "Registered successfully" }, { headers: corsHeaders });
+        return jsonResponse({ success: true, message: "Registration successful" }, 200, corsHeaders);
       }
 
-      // 2. LOGIN
-      if (path === "/api/login" && request.method === "POST") {
+      // 2. LOGIN API
+      if (path === "/api/login" && method === "POST") {
         const { mobile, password } = await request.json();
         const user = await env.DB.prepare("SELECT * FROM users WHERE mobile = ? AND password = ?").bind(mobile, password).first();
-        
+
         if (!user) {
-          return Response.json({ error: "Invalid mobile number or password" }, { status: 401, headers: corsHeaders });
+          return jsonResponse({ error: "Invalid mobile number or password" }, 401, corsHeaders);
         }
 
-        return Response.json({ success: true, user }, { headers: corsHeaders });
+        return jsonResponse({ success: true, user }, 200, corsHeaders);
       }
 
-      // 3. GET USER DATA & HISTORY
-      if (path === "/api/user-data" && request.method === "GET") {
-        const userId = url.searchParams.get("user_id");
-        const user = await env.DB.prepare("SELECT id, name, mobile, sms_wallet, earning_wallet, role FROM users WHERE id = ?").bind(userId).first();
-        const smsLogs = await env.DB.prepare("SELECT * FROM sms_logs WHERE user_id = ? ORDER BY id DESC LIMIT 50").bind(userId).all();
-        const addFundReqs = await env.DB.prepare("SELECT * FROM add_fund_requests WHERE user_id = ? ORDER BY id DESC").bind(userId).all();
-        const withdrawals = await env.DB.prepare("SELECT * FROM withdrawals WHERE user_id = ? ORDER BY id DESC").bind(userId).all();
+      // 3. COMPLETE SMS TASK API (Deduct ₹0.50 from SMS/Bonus wallet, Add ₹1.50 to Earning wallet)
+      if (path === "/api/task/complete" && method === "POST") {
+        const { userId } = await request.json();
+        const user = await env.DB.prepare("SELECT * FROM users WHERE id = ?").bind(userId).first();
 
-        return Response.json({ success: true, user, smsLogs: smsLogs.results, addFundReqs: addFundReqs.results, withdrawals: withdrawals.results }, { headers: corsHeaders });
-      }
-
-      // 4. ADD FUND REQUEST
-      if (path === "/api/add-fund" && request.method === "POST") {
-        const { user_id, amount, utr_number } = await request.json();
-        if (amount < 500 || amount > 2000) {
-          return Response.json({ error: "Amount must be between ₹500 and ₹2,000" }, { status: 400, headers: corsHeaders });
+        if (!user) {
+          return jsonResponse({ error: "User not found" }, 404, corsHeaders);
         }
 
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+        let smsWallet = user.sms_wallet;
+        let bonusWallet = user.bonus_wallet;
+        let earningWallet = user.earning_wallet;
+        const cost = 0.50;
+        const reward = 1.50;
+
+        // Check balance (use sms_wallet first, then bonus_wallet)
+        if (smsWallet >= cost) {
+          smsWallet -= cost;
+        } else if (bonusWallet >= cost) {
+          bonusWallet -= cost;
+        } else {
+          return jsonResponse({ error: "Insufficient balance. Please add funds." }, 400, corsHeaders);
+        }
+
+        earningWallet += reward;
+
+        // Update database
+        await env.DB.prepare(
+          "UPDATE users SET sms_wallet = ?, bonus_wallet = ?, earning_wallet = ? WHERE id = ?"
+        ).bind(smsWallet, bonusWallet, earningWallet, userId).run();
+
+        // Log SMS task
+        await env.DB.prepare(
+          "INSERT INTO sms_logs (user_id, recipient_number, message_text, status) VALUES (?, ?, ?, ?)"
+        ).bind(userId, "+919876543210", "Amazon Diwali Special Offer!", "Sent").run();
+
+        return jsonResponse({ success: true, sms_wallet: smsWallet, bonus_wallet: bonusWallet, earning_wallet: earningWallet }, 200, corsHeaders);
+      }
+
+      // 4. ADD FUND REQUEST API (UTR Submission)
+      if (path === "/api/fund/add" && method === "POST") {
+        const { userId, amount, utr } = await request.json();
+        if (!amount || amount < 500 || amount > 2000) {
+          return jsonResponse({ error: "Amount must be between ₹500 and ₹2000" }, 400, corsHeaders);
+        }
 
         await env.DB.prepare(
-          "INSERT INTO add_fund_requests (user_id, amount, utr_number, status, expires_at) VALUES (?, ?, ?, 'Pending', ?)"
-        ).bind(user_id, amount, utr_number, expiresAt).run();
+          "INSERT INTO add_fund_requests (user_id, amount, utr_number, status) VALUES (?, ?, ?, 'Pending')"
+        ).bind(userId, amount, utr).run();
 
-        return Response.json({ success: true, message: "Add fund request submitted successfully" }, { headers: corsHeaders });
+        return jsonResponse({ success: true, message: "Fund request submitted successfully" }, 200, corsHeaders);
       }
 
-      // 5. SEND SMS SIMULATION
-      if (path === "/api/send-sms" && request.method === "POST") {
-        const { user_id, masked_number, message_text } = await request.json();
-        
-        const user = await env.DB.prepare("SELECT sms_wallet FROM users WHERE id = ?").bind(user_id).first();
-        if (!user || user.sms_wallet < 0.50) {
-          return Response.json({ error: "Insufficient SMS Wallet balance. Please add funds." }, { status: 400, headers: corsHeaders });
+      // 5. WITHDRAWAL REQUEST API (Min ₹5,000, Max ₹50,000)
+      if (path === "/api/withdrawal/request" && method === "POST") {
+        const { userId, amount, paymentInfo } = await request.json();
+        if (!amount || amount < 5000 || amount > 50000) {
+          return jsonResponse({ error: "Withdrawal limit is ₹5,000 to ₹50,000" }, 400, corsHeaders);
         }
 
-        await env.DB.prepare("UPDATE users SET sms_wallet = sms_wallet - 0.50, earning_wallet = earning_wallet + 2.50 WHERE id = ?").bind(user_id).run();
-
-        await env.DB.prepare(
-          "INSERT INTO sms_logs (user_id, recipient_number, message_text, status) VALUES (?, ?, ?, 'Sent')"
-        ).bind(user_id, masked_number, message_text).run();
-
-        return Response.json({ success: true, message: "SMS Sent successfully!" }, { headers: corsHeaders });
-      }
-
-      // 6. WITHDRAWAL REQUEST
-      if (path === "/api/withdraw" && request.method === "POST") {
-        const { user_id, amount, payment_info } = await request.json();
-        if (amount < 5000 || amount > 30000) {
-          return Response.json({ error: "Withdrawal amount must be between ₹5,000 and ₹30,000" }, { status: 400, headers: corsHeaders });
-        }
-
-        const today = new Date().toISOString().split('T')[0];
-        const existingReq = await env.DB.prepare(
-          "SELECT * FROM withdrawals WHERE user_id = ? AND DATE(created_at) = ?"
-        ).bind(user_id, today).first();
-
-        if (existingReq) {
-          return Response.json({ error: "You can only make 1 withdrawal request per day." }, { status: 400, headers: corsHeaders });
-        }
-
-        const user = await env.DB.prepare("SELECT earning_wallet FROM users WHERE id = ?").bind(user_id).first();
+        const user = await env.DB.prepare("SELECT earning_wallet FROM users WHERE id = ?").bind(userId).first();
         if (!user || user.earning_wallet < amount) {
-          return Response.json({ error: "Insufficient Earning Wallet balance." }, { status: 400, headers: corsHeaders });
+          return jsonResponse({ error: "Insufficient earning wallet balance" }, 400, corsHeaders);
         }
 
-        await env.DB.prepare("UPDATE users SET earning_wallet = earning_wallet - ? WHERE id = ?").bind(amount, user_id).run();
+        // Deduct from earning wallet immediately upon request
+        const newEarning = user.earning_wallet - amount;
+        await env.DB.prepare("UPDATE users SET earning_wallet = ? WHERE id = ?").bind(newEarning, userId).run();
+
         await env.DB.prepare(
           "INSERT INTO withdrawals (user_id, amount, payment_info, status) VALUES (?, ?, ?, 'Pending')"
-        ).bind(user_id, amount, payment_info).run();
+        ).bind(userId, amount, paymentInfo).run();
 
-        return Response.json({ success: true, message: "Withdrawal request submitted successfully!" }, { headers: corsHeaders });
+        return jsonResponse({ success: true, message: "Withdrawal requested successfully" }, 200, corsHeaders);
       }
 
-      // 7. ADMIN: GET ALL REQUESTS
-      if (path === "/api/admin/data" && request.method === "GET") {
-        const fundReqs = await env.DB.prepare("SELECT a.*, u.name, u.mobile FROM add_fund_requests a JOIN users u ON a.user_id = u.id ORDER BY a.id DESC").all();
-        const withdrawals = await env.DB.prepare("SELECT w.*, u.name, u.mobile FROM withdrawals w JOIN users u ON w.user_id = u.id ORDER BY w.id DESC").all();
-        return Response.json({ success: true, fundReqs: fundReqs.results, withdrawals: withdrawals.results }, { headers: corsHeaders });
-      }
-
-      // 8. ADMIN: APPROVE/DECLINE WITH SHORT REASON
-      if (path === "/api/admin/action" && request.method === "POST") {
-        const { type, id, action, reason } = await request.json();
-
-        if (type === 'fund') {
-          const req = await env.DB.prepare("SELECT * FROM add_fund_requests WHERE id = ?").bind(id).first();
-          if (!req || req.status !== 'Pending') return Response.json({ error: "Invalid request" }, { status: 400, headers: corsHeaders });
-
-          if (action === 'approve') {
-            await env.DB.prepare("UPDATE add_fund_requests SET status = 'Approved', reason = NULL WHERE id = ?").bind(id).run();
-            await env.DB.prepare("UPDATE users SET sms_wallet = sms_wallet + ? WHERE id = ?").bind(req.amount, req.user_id).run();
-          } else {
-            await env.DB.prepare("UPDATE add_fund_requests SET status = 'Declined', reason = ? WHERE id = ?").bind(reason || 'Invalid UTR', id).run();
-          }
-        } else if (type === 'withdraw') {
-          const req = await env.DB.prepare("SELECT * FROM withdrawals WHERE id = ?").bind(id).first();
-          if (!req || req.status !== 'Pending') return Response.json({ error: "Invalid request" }, { status: 400, headers: corsHeaders });
-
-          if (action === 'approve') {
-            await env.DB.prepare("UPDATE withdrawals SET status = 'Approved', reason = NULL WHERE id = ?").bind(id).run();
-          } else {
-            await env.DB.prepare("UPDATE withdrawals SET status = 'Rejected', reason = ? WHERE id = ?").bind(reason || 'Rejected by Admin', id).run();
-            await env.DB.prepare("UPDATE users SET earning_wallet = earning_wallet + ? WHERE id = ?").bind(req.amount, req.user_id).run();
-          }
+      // 6. UPDATE PROFILE API
+      if (path === "/api/profile/update" && method === "POST") {
+        const { userId, name, mobile, password } = await request.json();
+        
+        if (password && password.trim() !== "") {
+          await env.DB.prepare(
+            "UPDATE users SET name = ?, mobile = ?, password = ? WHERE id = ?"
+          ).bind(name, mobile, password, userId).run();
+        } else {
+          await env.DB.prepare(
+            "UPDATE users SET name = ?, mobile = ? WHERE id = ?"
+          ).bind(name, mobile, userId).run();
         }
 
-        return Response.json({ success: true, message: "Action updated successfully" }, { headers: corsHeaders });
+        return jsonResponse({ success: true, message: "Profile updated successfully" }, 200, corsHeaders);
       }
 
-      return new Response("Not Found", { status: 404, headers: corsHeaders });
+      // Default: Serve static assets (index.html) via Cloudflare Workers Assets binding
+      return env.ASSETS.fetch(request);
+
     } catch (err) {
-      return Response.json({ error: err.message }, { status: 500, headers: corsHeaders });
+      return jsonResponse({ error: err.message }, 500, corsHeaders);
     }
   }
 };
+
+function jsonResponse(data, status, headers) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { ...headers, "Content-Type": "application/json" }
+  });
+}
