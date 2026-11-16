@@ -137,28 +137,36 @@ export default {
         }, 200, corsHeaders);
       }
 
-      // 7. KYC & BANK UPDATE API
+      // 7. STEP-BY-STEP KYC UPDATE API
       if (path === "/api/kyc/update" && method === "POST") {
-        const { userId, aadhaar, pan, bank } = await request.json();
-        await env.DB.prepare(
-          "UPDATE users SET aadhaar_no = ?, pan_no = ?, bank_details = ? WHERE id = ?"
-        ).bind(aadhaar, pan, bank, userId).run();
+        const body = await request.json();
+        const { userId, step } = body;
 
-        return jsonResponse({ success: true, message: "KYC updated successfully" }, 200, corsHeaders);
+        if (step === 'aadhaar') {
+          await env.DB.prepare("UPDATE users SET aadhaar_no = ? WHERE id = ?").bind(body.aadhaar, userId).run();
+        } else if (step === 'pan') {
+          await env.DB.prepare("UPDATE users SET pan_no = ? WHERE id = ?").bind(body.pan, userId).run();
+        } else if (step === 'bank') {
+          await env.DB.prepare(
+            "UPDATE users SET bank_acc = ?, bank_ifsc = ?, bank_holder = ? WHERE id = ?"
+          ).bind(body.bank_acc, body.bank_ifsc, body.bank_holder, userId).run();
+        }
+
+        return jsonResponse({ success: true, message: "KYC step updated" }, 200, corsHeaders);
       }
 
-      // 8. UPDATE PROFILE API
+      // 8. UPDATE PROFILE & PHOTO API
       if (path === "/api/profile/update" && method === "POST") {
-        const { userId, name, mobile, password } = await request.json();
+        const { userId, name, mobile, password, profile_pic } = await request.json();
         
         if (password && password.trim() !== "") {
           await env.DB.prepare(
-            "UPDATE users SET name = ?, mobile = ?, password = ? WHERE id = ?"
-          ).bind(name, mobile, password, userId).run();
+            "UPDATE users SET name = ?, mobile = ?, password = ?, profile_pic = ? WHERE id = ?"
+          ).bind(name, mobile, password, profile_pic, userId).run();
         } else {
           await env.DB.prepare(
-            "UPDATE users SET name = ?, mobile = ? WHERE id = ?"
-          ).bind(name, mobile, userId).run();
+            "UPDATE users SET name = ?, mobile = ?, profile_pic = ? WHERE id = ?"
+          ).bind(name, mobile, profile_pic, userId).run();
         }
 
         return jsonResponse({ success: true, message: "Profile updated successfully" }, 200, corsHeaders);
