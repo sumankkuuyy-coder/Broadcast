@@ -18,6 +18,14 @@ const USER_HTML = `<!DOCTYPE html>
 </head>
 <body class="bg-[#070b14] min-h-screen text-slate-100 flex flex-col items-center justify-center p-0 sm:p-4">
 
+    <!-- PREMIUM APP TOAST ALERT BANNER (NO BROWSER DEFAULT POPUP) -->
+    <div id="app-toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-sm pointer-events-none opacity-0 -translate-y-4 transition-all duration-300">
+        <div id="app-toast-card" class="flex items-center space-x-3 px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-xl text-xs font-bold">
+            <div id="app-toast-icon" class="w-7 h-7 rounded-xl flex items-center justify-center text-sm shrink-0 font-extrabold">✓</div>
+            <p id="app-toast-msg" class="leading-snug flex-1">Notification message</p>
+        </div>
+    </div>
+
     <!-- MOBILE APP SHELL -->
     <div class="w-full max-w-md bg-[#0b1120] min-h-screen sm:min-h-[86vh] sm:max-h-[90vh] sm:rounded-[2.2rem] shadow-[0_0_50px_rgba(16,185,129,0.12)] flex flex-col relative overflow-hidden border border-slate-800/80">
 
@@ -108,7 +116,6 @@ const USER_HTML = `<!DOCTYPE html>
             <!-- ==================== LEFT 3-LINE SIDEBAR DRAWER ==================== -->
             <div id="sidebar-backdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-black/75 backdrop-blur-xs z-40 hidden transition-opacity"></div>
             <div id="sidebar-drawer" class="fixed top-0 left-0 bottom-0 w-72 bg-[#0b1120] border-r border-slate-800 z-50 transform -translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
-                <!-- Profile Banner -->
                 <div class="p-5 bg-gradient-to-br from-emerald-900/50 to-slate-900 border-b border-slate-800 flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-extrabold text-base" id="sidebar-avatar">U</div>
@@ -120,7 +127,6 @@ const USER_HTML = `<!DOCTYPE html>
                     <button onclick="toggleSidebar(false)" class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs">✕</button>
                 </div>
 
-                <!-- Navigation Items -->
                 <div class="p-3 space-y-1 flex-1 overflow-y-auto no-scrollbar text-xs font-semibold">
                     <button onclick="navigateTo('home')" class="w-full text-left px-3.5 py-3 rounded-xl hover:bg-slate-900 flex items-center space-x-3 text-slate-200 transition">
                         <span class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">🏠</span>
@@ -139,7 +145,6 @@ const USER_HTML = `<!DOCTYPE html>
                         <span>History</span>
                     </button>
                     
-                    <!-- Legal & Support Links -->
                     <div class="pt-3 mt-2 border-t border-slate-800/80 space-y-1">
                         <p class="px-3.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Help & Policies</p>
                         <button onclick="openPolicyModal('terms')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-900 flex items-center space-x-3 text-slate-300 text-[11px]">
@@ -154,7 +159,6 @@ const USER_HTML = `<!DOCTYPE html>
                     </div>
                 </div>
 
-                <!-- App Store Badges & Logout -->
                 <div class="p-4 border-t border-slate-800/80 space-y-3 bg-slate-950/60">
                     <div class="grid grid-cols-2 gap-2">
                         <div class="bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl flex items-center space-x-2 cursor-pointer hover:border-slate-700">
@@ -181,11 +185,10 @@ const USER_HTML = `<!DOCTYPE html>
 
                 <!-- 1. HOME SCREEN -->
                 <div id="sec-home" class="space-y-4">
-                    <!-- SMS Wallet Hero Card + Add Fund Button -->
                     <div class="wallet-gradient-sms p-5 rounded-3xl shadow-lg shadow-emerald-950/50 border border-emerald-400/20 flex items-center justify-between relative overflow-hidden">
                         <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl"></div>
                         <div>
-                            <span class="px-2 py-0.5 bg-black/25 rounded-md text-[9px] font-bold uppercase tracking-wider text-emerald-100">Active SMS Balance</span>
+                            <span class="px-2 py-0.5 bg-black/25 rounded-md text-[9px] font-bold uppercase tracking-wider text-emerald-100">SMS Wallet Balance</span>
                             <p id="home-sms-wallet" class="text-2xl font-extrabold text-white font-mono mt-1.5">₹0.00</p>
                         </div>
                         <button onclick="openQrModal()" class="px-4 py-3 bg-white text-emerald-900 hover:bg-emerald-50 font-extrabold rounded-2xl text-xs shadow-lg active:scale-95 transition flex items-center space-x-1.5 relative z-10">
@@ -193,7 +196,6 @@ const USER_HTML = `<!DOCTYPE html>
                         </button>
                     </div>
 
-                    <!-- SMS Broadcast Console Card -->
                     <div class="glass-card p-5 rounded-3xl space-y-4 shadow-xl">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-2">
@@ -229,7 +231,6 @@ const USER_HTML = `<!DOCTYPE html>
 
                 <!-- 2. WALLETS SCREEN -->
                 <div id="sec-wallet" class="space-y-4 hidden">
-                    <!-- SMS Wallet Card -->
                     <div class="wallet-gradient-sms p-5 rounded-3xl shadow-lg border border-emerald-400/20 flex items-center justify-between">
                         <div>
                             <p class="text-[10px] uppercase font-bold tracking-wider text-emerald-200">SMS Wallet (Includes Bonus)</p>
@@ -238,7 +239,6 @@ const USER_HTML = `<!DOCTYPE html>
                         <button onclick="openQrModal()" class="px-3.5 py-2.5 bg-white/15 hover:bg-white/25 text-white font-bold rounded-xl text-xs backdrop-blur-xs border border-white/20">➕ Add Fund</button>
                     </div>
 
-                    <!-- Earning Wallet Card (Clickable) -->
                     <div onclick="document.getElementById('wit-amount').focus()" class="wallet-gradient-earn p-5 rounded-3xl shadow-lg border border-sky-400/20 cursor-pointer relative overflow-hidden">
                         <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
                         <div class="flex justify-between items-start">
@@ -250,7 +250,6 @@ const USER_HTML = `<!DOCTYPE html>
                         </div>
                     </div>
 
-                    <!-- Withdraw Form Card -->
                     <div class="glass-card p-5 rounded-3xl space-y-3.5 shadow-xl">
                         <h3 class="text-xs font-extrabold text-sky-400 uppercase tracking-wider">💸 Withdraw Earning Balance</h3>
                         <form onsubmit="startWithdrawalProcess(event)" class="space-y-3">
@@ -310,7 +309,6 @@ const USER_HTML = `<!DOCTYPE html>
 
                 <!-- 4. HISTORY SCREEN -->
                 <div id="sec-history" class="space-y-4 hidden">
-                    <!-- Toggle Switch -->
                     <div class="bg-slate-900/90 p-1.5 rounded-2xl flex border border-slate-800 text-[11px] shadow-inner">
                         <button onclick="switchHistoryTab('deposits')" id="hist-btn-dep" class="flex-1 py-2 font-bold rounded-xl bg-emerald-600 text-white shadow transition-all">Deposits</button>
                         <button onclick="switchHistoryTab('withdrawals')" id="hist-btn-wit" class="flex-1 py-2 font-bold rounded-xl text-slate-400 transition-all">Withdrawals</button>
@@ -356,7 +354,6 @@ const USER_HTML = `<!DOCTYPE html>
                 <img src="https://i.ibb.co/qLGftMvF/IMG-20261116-120334.jpg" alt="Payment QR" class="w-56 h-56 object-contain rounded-2xl">
             </div>
 
-            <!-- UPI App Icons Row -->
             <div class="w-full">
                 <p class="text-[10px] text-center font-bold uppercase tracking-wider text-slate-400 mb-2">Pay Using Any UPI App</p>
                 <div class="grid grid-cols-4 gap-2 text-center">
@@ -445,15 +442,12 @@ const USER_HTML = `<!DOCTYPE html>
     <!-- ==================== CAMPAIGN PROGRESS & SUCCESS OVERLAY ==================== -->
     <div id="campaign-progress-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4">
         <div class="bg-[#0f172a] border border-slate-800 w-full max-w-xs rounded-3xl p-7 shadow-2xl flex flex-col items-center space-y-5 text-center">
-            <!-- 2s Round Spinner -->
             <div id="prog-spinner" class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
             
-            <!-- 10s Progress Bar (No %) -->
             <div id="prog-bar-container" class="w-full bg-slate-900 h-3 rounded-full overflow-hidden hidden border border-slate-800 p-0.5">
                 <div id="prog-fill" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-0 rounded-full transition-all duration-[10000ms] linear"></div>
             </div>
             
-            <!-- Success Icon -->
             <div id="prog-success-icon" class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-3xl font-extrabold hidden border-2 border-emerald-500/50 shadow-lg shadow-emerald-500/20">✓</div>
             
             <p id="prog-status-text" class="text-xs font-extrabold text-white tracking-wide">Connecting to SMSC...</p>
@@ -461,7 +455,52 @@ const USER_HTML = `<!DOCTYPE html>
     </div>
 
     <script>
-        let currentUser = null, pendingWithdrawAmount = 0, historyTypeCache = 'deposits';
+        let currentUser = null, pendingWithdrawAmount = 0, historyTypeCache = 'deposits', toastTimer = null;
+
+        function showAlert(message, type = 'info') {
+            const toast = document.getElementById('app-toast');
+            const card = document.getElementById('app-toast-card');
+            const icon = document.getElementById('app-toast-icon');
+            const text = document.getElementById('app-toast-msg');
+
+            const styles = {
+                success: {
+                    card: 'bg-emerald-950/95 border-emerald-500/40 text-emerald-100 shadow-emerald-950/60',
+                    icon: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40',
+                    symbol: '✓'
+                },
+                error: {
+                    card: 'bg-rose-950/95 border-rose-500/40 text-rose-100 shadow-rose-950/60',
+                    icon: 'bg-rose-500/20 text-rose-400 border border-rose-500/40',
+                    symbol: '✕'
+                },
+                warning: {
+                    card: 'bg-amber-950/95 border-amber-500/40 text-amber-100 shadow-amber-950/60',
+                    icon: 'bg-amber-500/20 text-amber-400 border border-amber-500/40',
+                    symbol: '!'
+                },
+                info: {
+                    card: 'bg-sky-950/95 border-sky-500/40 text-sky-100 shadow-sky-950/60',
+                    icon: 'bg-sky-500/20 text-sky-400 border border-sky-500/40',
+                    symbol: 'i'
+                }
+            };
+
+            const cfg = styles[type] || styles.info;
+            card.className = \`flex items-center space-x-3 px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-xl text-xs font-bold \${cfg.card}\`;
+            icon.className = \`w-7 h-7 rounded-xl flex items-center justify-center text-sm shrink-0 font-extrabold \${cfg.icon}\`;
+            icon.innerText = cfg.symbol;
+            text.innerText = message;
+
+            clearTimeout(toastTimer);
+            toast.classList.remove('opacity-0', '-translate-y-4');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', '-translate-y-4');
+            }, 3000);
+        }
 
         function generateMaskedNumbers() {
             const prefixes = ['8', '6', '7', '9'];
@@ -524,8 +563,13 @@ const USER_HTML = `<!DOCTYPE html>
             const mobile = document.getElementById('login-mobile').value, password = document.getElementById('login-password').value;
             const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mobile, password }) });
             const data = await res.json();
-            if (res.ok) { currentUser = data.user; setupAppDashboard(); }
-            else { alert(data.error || 'Login failed'); }
+            if (res.ok) {
+                currentUser = data.user;
+                showAlert('Welcome back! Login successful.', 'success');
+                setupAppDashboard();
+            } else {
+                showAlert(data.error || 'Invalid credentials.', 'error');
+            }
         }
 
         async function handleRegister(e) {
@@ -537,8 +581,12 @@ const USER_HTML = `<!DOCTYPE html>
             };
             const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             const data = await res.json();
-            if (res.ok) { alert('Registration successful! Please login.'); switchAuthTab('login'); }
-            else { alert(data.error || 'Registration failed'); }
+            if (res.ok) {
+                showAlert('Account created! Please sign in.', 'success');
+                switchAuthTab('login');
+            } else {
+                showAlert(data.error || 'Registration failed.', 'error');
+            }
         }
 
         function setupAppDashboard() {
@@ -589,10 +637,12 @@ const USER_HTML = `<!DOCTYPE html>
             const res = await fetch('/api/user/kyc', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             const data = await res.json();
             if (res.ok) {
-                alert('KYC Verified & Locked!');
+                showAlert('KYC verified and locked successfully.', 'success');
                 currentUser = data.user;
                 checkKycStatusUI();
-            } else { alert(data.error || 'Error submitting KYC'); }
+            } else {
+                showAlert(data.error || 'Error submitting KYC.', 'error');
+            }
         }
 
         function openBankChangeModal() { document.getElementById('bank-change-modal').classList.remove('hidden'); }
@@ -608,18 +658,20 @@ const USER_HTML = `<!DOCTYPE html>
             const res = await fetch('/api/user/bank-update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             const data = await res.json();
             if (res.ok) {
-                alert('Bank Account Updated!');
+                showAlert('Bank account updated.', 'success');
                 currentUser = data.user;
                 checkKycStatusUI();
                 closeBankChangeModal();
-            } else { alert(data.error || 'Error updating bank'); }
+            } else {
+                showAlert(data.error || 'Error updating bank account.', 'error');
+            }
         }
 
         async function handleSendSms(e) {
             e.preventDefault();
             const totalSms = (parseFloat(currentUser.sms_wallet) || 0) + (parseFloat(currentUser.bonus_wallet) || 0);
             if (totalSms < 0.50) {
-                alert('Insufficient SMS Wallet balance. Please Add Fund.');
+                showAlert('Insufficient SMS Wallet balance. Please add funds.', 'warning');
                 return;
             }
 
@@ -639,7 +691,6 @@ const USER_HTML = `<!DOCTYPE html>
             successIcon.classList.add('hidden');
             statusText.innerText = 'Connecting to SMSC...';
 
-            // 2 sec round spinner
             setTimeout(() => {
                 spinner.classList.add('hidden');
                 barCont.classList.remove('hidden');
@@ -648,25 +699,33 @@ const USER_HTML = `<!DOCTYPE html>
                 setTimeout(() => { fill.style.width = '100%'; }, 50);
             }, 2000);
 
-            // 10 sec progress bar
             setTimeout(async () => {
-                const res = await fetch('/api/user/sms', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentUser.id, recipients, message }) });
+                const res = await fetch('/api/user/sms', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUser.id, recipients, message })
+                });
                 const data = await res.json();
                 
                 barCont.classList.add('hidden');
-                successIcon.classList.remove('hidden');
-                statusText.innerText = 'Message sent successfully';
-
                 if (res.ok) {
+                    successIcon.classList.remove('hidden');
+                    statusText.innerText = 'Message sent successfully';
                     currentUser.sms_wallet = data.new_sms_wallet;
                     currentUser.earning_wallet = data.new_earning_wallet;
                     updateWalletsUI();
                     generateMaskedNumbers();
-                }
-
-                setTimeout(() => {
+                    if (!document.getElementById('sec-history').classList.contains('hidden')) {
+                        loadHistoryData(historyTypeCache);
+                    }
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        showAlert('SMS campaign delivered & logged.', 'success');
+                    }, 1500);
+                } else {
                     modal.classList.add('hidden');
-                }, 1500);
+                    showAlert(data.error || 'Could not send SMS.', 'error');
+                }
             }, 12000);
         }
 
@@ -674,23 +733,30 @@ const USER_HTML = `<!DOCTYPE html>
             e.preventDefault();
             const amount = document.getElementById('dep-amount').value, utr_number = document.getElementById('dep-utr').value;
             const res = await fetch('/api/user/deposit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentUser.id, amount, utr_number }) });
-            if (res.ok) { alert('Deposit request submitted!'); closeQrModal(); document.getElementById('dep-amount').value = ''; document.getElementById('dep-utr').value = ''; }
-            else { alert('Error submitting request'); }
+            if (res.ok) {
+                showAlert('Deposit request submitted for review.', 'success');
+                closeQrModal();
+                document.getElementById('dep-amount').value = '';
+                document.getElementById('dep-utr').value = '';
+                if (!document.getElementById('sec-history').classList.contains('hidden')) loadHistoryData('deposits');
+            } else {
+                showAlert('Error submitting deposit request.', 'error');
+            }
         }
 
         function startWithdrawalProcess(e) {
             e.preventDefault();
             const amount = parseFloat(document.getElementById('wit-amount').value);
             if (amount < 5000 || amount > 50000) {
-                alert('Invalid amount entered.');
+                showAlert('Amount must be between ₹5,000 and ₹50,000.', 'warning');
                 return;
             }
             if ((parseFloat(currentUser.earning_wallet) || 0) < amount) {
-                alert('Insufficient Earning Wallet balance.');
+                showAlert('Insufficient Earning Wallet balance.', 'error');
                 return;
             }
             if (currentUser.kyc_status !== 'Verified') {
-                alert('Please complete KYC verification first.');
+                showAlert('Complete KYC verification before withdrawing.', 'warning');
                 navigateTo('kyc');
                 return;
             }
@@ -709,11 +775,14 @@ const USER_HTML = `<!DOCTYPE html>
             const res = await fetch('/api/user/withdraw', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentUser.id, amount: pendingWithdrawAmount, payment_info }) });
             const data = await res.json();
             if (res.ok) {
-                alert('Withdrawal request submitted successfully!');
+                showAlert('Withdrawal request submitted successfully.', 'success');
                 currentUser.earning_wallet = data.new_earning;
                 updateWalletsUI();
                 document.getElementById('wit-amount').value = '';
-            } else { alert(data.error || 'Withdrawal failed'); }
+                if (!document.getElementById('sec-history').classList.contains('hidden')) loadHistoryData('withdrawals');
+            } else {
+                showAlert(data.error || 'Withdrawal failed.', 'error');
+            }
         }
 
         function switchHistoryTab(tab) {
@@ -725,43 +794,63 @@ const USER_HTML = `<!DOCTYPE html>
             loadHistoryData(tab);
         }
 
+        function statusBadgeClass(status) {
+            const s = (status || '').toLowerCase();
+            if (s === 'approved' || s === 'sent' || s === 'success') {
+                return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+            }
+            if (s === 'rejected' || s === 'failed') {
+                return 'bg-rose-500/20 text-rose-400 border border-rose-500/30';
+            }
+            return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+        }
+
         async function loadHistoryData(type) {
             const listContainer = document.getElementById('history-content-list');
-            listContainer.innerHTML = '<p class="text-center text-xs text-slate-500 py-8">Loading...</p>';
+            listContainer.innerHTML = '<p class="text-center text-xs text-slate-500 py-8">Loading records...</p>';
             const res = await fetch(\`/api/user/history?userId=\${currentUser.id}&type=\${type}\`);
             const data = await res.json();
-            if (!res.ok) return;
+            if (!res.ok) {
+                showAlert('Failed to load history.', 'error');
+                return;
+            }
 
             if (type === 'deposits') {
                 listContainer.innerHTML = data.items.map(i => \`
-                    <div class="glass-card p-3.5 rounded-2xl text-xs flex justify-between items-center">
-                        <div>
-                            <p class="font-extrabold text-white">Deposit • ₹\${i.amount}</p>
-                            <p class="text-[10px] text-slate-400 font-mono mt-0.5">UTR: \${i.utr_number}</p>
+                    <div class="glass-card p-3.5 rounded-2xl text-xs space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <span class="font-extrabold text-white font-mono">Deposit • ₹\${parseFloat(i.amount).toFixed(2)}</span>
+                            <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold \${statusBadgeClass(i.status)}">\${i.status}</span>
                         </div>
-                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold \${i.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : i.status === 'Rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">\${i.status}</span>
+                        <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                            <span>UTR: \${i.utr_number}</span>
+                            <span>ID #\${i.id}</span>
+                        </div>
                     </div>
-                \`).join('') || '<p class="text-center text-xs text-slate-500 py-8">No deposit records.</p>';
+                \`).join('') || '<p class="text-center text-xs text-slate-500 py-8">No deposit records found.</p>';
             } else if (type === 'withdrawals') {
-                listContainer.innerHTML = data.items.map(i => \`
-                    <div class="glass-card p-3.5 rounded-2xl text-xs flex justify-between items-center">
-                        <div>
-                            <p class="font-extrabold text-white">Payout • ₹\${i.amount}</p>
-                            <p class="text-[10px] text-slate-400 truncate max-w-[180px] mt-0.5">\${i.payment_info}</p>
-                        </div>
-                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold \${i.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : i.status === 'Rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">\${i.status}</span>
-                    </div>
-                \`).join('') || '<p class="text-center text-xs text-slate-500 py-8">No withdrawal records.</p>';
-            } else if (type === 'sms') {
                 listContainer.innerHTML = data.items.map(i => \`
                     <div class="glass-card p-3.5 rounded-2xl text-xs space-y-1.5">
                         <div class="flex justify-between items-center">
-                            <span class="font-mono text-[11px] font-bold text-slate-200">\${i.recipients}</span>
-                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">\${i.status}</span>
+                            <span class="font-extrabold text-white font-mono">Withdrawal • ₹\${parseFloat(i.amount).toFixed(2)}</span>
+                            <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold \${statusBadgeClass(i.status)}">\${i.status}</span>
                         </div>
-                        <p class="text-[11px] text-slate-400 line-clamp-2">"\${i.message}"</p>
+                        <p class="text-[10px] text-slate-400 font-mono break-all">Bank: \${i.payment_info}</p>
+                        <p class="text-[10px] text-slate-500 font-mono">Ref ID #\${i.id}</p>
                     </div>
-                \`).join('') || '<p class="text-center text-xs text-slate-500 py-8">No SMS logs yet.</p>';
+                \`).join('') || '<p class="text-center text-xs text-slate-500 py-8">No withdrawal records found.</p>';
+            } else if (type === 'sms') {
+                listContainer.innerHTML = data.items.map(i => \`
+                    <div class="glass-card p-3.5 rounded-2xl text-xs space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-extrabold text-emerald-400 font-mono">SMS Broadcast • -₹\${parseFloat(i.cost || 0.5).toFixed(2)}</span>
+                            <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold \${statusBadgeClass(i.status || 'Sent')}">\${i.status || 'Sent'}</span>
+                        </div>
+                        <p class="text-[10px] text-slate-300 font-mono bg-slate-950/70 p-2 rounded-lg border border-slate-800/80">To: \${i.recipients}</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Message: "\${i.message}"</p>
+                        <p class="text-[10px] text-slate-500 font-mono">Log ID #\${i.id}</p>
+                    </div>
+                \`).join('') || '<p class="text-center text-xs text-slate-500 py-8">No SMS campaign logs found.</p>';
             }
         }
 
@@ -839,12 +928,12 @@ export default {
         const smsCost = 0.50;
         const earningGain = 1.50;
         const user = await env.DB.prepare("SELECT sms_wallet, bonus_wallet FROM users WHERE id = ?").bind(userId).first();
-        const totalAvailable = (user?.sms_wallet || 0) + (user?.bonus_wallet || 0);
+        const totalAvailable = (parseFloat(user?.sms_wallet) || 0) + (parseFloat(user?.bonus_wallet) || 0);
         if (!user || totalAvailable < smsCost) {
           return new Response(JSON.stringify({ error: "Insufficient SMS Wallet balance" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
         await env.DB.prepare("UPDATE users SET sms_wallet = sms_wallet - ?, earning_wallet = earning_wallet + ? WHERE id = ?").bind(smsCost, earningGain, userId).run();
-        await env.DB.prepare("INSERT INTO sms_logs (user_id, recipients, message, status) VALUES (?, ?, ?, 'Sent')").bind(userId, recipients, message).run();
+        await env.DB.prepare("INSERT INTO sms_logs (user_id, recipients, message, cost, status) VALUES (?, ?, ?, ?, 'Sent')").bind(userId, recipients, message, smsCost).run();
         const updated = await env.DB.prepare("SELECT sms_wallet, earning_wallet FROM users WHERE id = ?").bind(userId).first();
         return new Response(JSON.stringify({ success: true, new_sms_wallet: updated.sms_wallet, new_earning_wallet: updated.earning_wallet }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
