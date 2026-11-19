@@ -244,9 +244,9 @@ const USER_HTML = `<!DOCTYPE html>
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Approved Promotional Template</label>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Approved Template</label>
                                 <div class="relative">
-                                    <textarea id="sms-message" required readonly rows="3" class="w-full px-3.5 py-2.5 bg-amber-50/70 border border-amber-200 rounded-xl text-xs text-slate-700 resize-none leading-relaxed font-medium">Special BSNL 5G Network Expansion Offer! Recharge now & get unlimited benefits across India. Click to activate: https://bsnl.co.in</textarea>
+                                    <textarea id="sms-message" required readonly rows="3" class="w-full px-3.5 py-2.5 bg-amber-50/70 border border-amber-200 rounded-xl text-xs text-slate-700 resize-none leading-relaxed font-medium">Meesho Super Saver Offer! Shop lowest prices across India with free delivery & easy returns. Open the Meesho app & grab deals now!</textarea>
                                     <span class="absolute bottom-2 right-2.5 text-[9px] font-extrabold uppercase bg-amber-200 text-amber-950 px-1.5 py-0.5 rounded">Locked</span>
                                 </div>
                             </div>
