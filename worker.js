@@ -40,8 +40,8 @@ const USER_HTML = `<!DOCTYPE html>
                     <img src="https://i.ibb.co/C5VBSGcV/BSNL-New-Logo.png" alt="BSNL Logo" class="h-12 object-contain">
                 </div>
                 <div>
-                    <h1 class="text-lg font-extrabold text-slate-900 tracking-tight">BSNL Partner Portal</h1>
-                    <p class="text-xs text-slate-500 font-medium">Next-Gen SMS Broadcast & Rewards</p>
+                    <h1 class="text-lg font-extrabold text-slate-900 tracking-tight">BSNL Broadcast</h1>
+                    <p class="text-xs text-slate-500 font-medium">Next-Gen Earning & Rewards</p>
                 </div>
                 
                 <!-- TOGGLE SWITCH -->
@@ -59,12 +59,12 @@ const USER_HTML = `<!DOCTYPE html>
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">Mobile Number</label>
                         <div class="relative">
                             <span class="absolute left-3.5 top-3 text-slate-500 text-xs font-mono font-bold">+91</span>
-                            <input type="tel" id="login-mobile" required placeholder="9876543210" class="w-full pl-11 pr-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm font-mono text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors">
+                            <input type="tel" id="login-mobile" required placeholder="**********" class="w-full pl-11 pr-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm font-mono text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors">
                         </div>
                     </div>
                     <div>
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">Password</label>
-                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors">
+                        <input type="password" id="login-password" required placeholder="******" class="w-full px-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors">
                     </div>
                     <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-slate-950 font-extrabold rounded-xl text-sm shadow-lg shadow-amber-500/25 active:scale-[0.98] transition-all">Sign In →</button>
                 </form>
@@ -157,7 +157,7 @@ const USER_HTML = `<!DOCTYPE html>
                             <span>⚖️</span><span>Rules & Regulations</span>
                         </button>
                         <a href="https://t.me/Customersupport24hr_bot" target="_blank" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-amber-100/80 hover:bg-amber-200/80 border border-amber-300 flex items-center space-x-3 text-amber-900 text-[11px] font-extrabold mt-1">
-                            <span>✈️</span><span>Customer Support</span>
+                            <span>📩</span><span>Customer Support</span>
                         </a>
                     </div>
                 </div>
@@ -229,7 +229,7 @@ const USER_HTML = `<!DOCTYPE html>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                                <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Bulk SMS Terminal</h3>
+                                <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Bulk SMS Broadcast</h3>
                             </div>
                             <span class="text-[10px] font-mono font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-md border border-amber-300">GATEWAY READY</span>
                         </div>
@@ -340,7 +340,7 @@ const USER_HTML = `<!DOCTYPE html>
                     <div class="bg-amber-100/80 p-1.5 rounded-2xl flex border border-amber-200 text-[11px] shadow-inner">
                         <button onclick="switchHistoryTab('deposits')" id="hist-btn-dep" class="flex-1 py-2 font-extrabold rounded-xl bg-amber-400 text-slate-950 shadow-xs transition-all">Deposits</button>
                         <button onclick="switchHistoryTab('withdrawals')" id="hist-btn-wit" class="flex-1 py-2 font-bold rounded-xl text-slate-600 transition-all">Withdrawals</button>
-                        <button onclick="switchHistoryTab('sms')" id="hist-btn-sms" class="flex-1 py-2 font-bold rounded-xl text-slate-600 transition-all">SMS Logs</button>
+                        <button onclick="switchHistoryTab('sms')" id="hist-btn-sms" class="flex-1 py-2 font-bold rounded-xl text-slate-600 transition-all">SMS History</button>
                     </div>
 
                     <div id="history-content-list" class="space-y-2.5">
@@ -478,7 +478,7 @@ const USER_HTML = `<!DOCTYPE html>
             
             <div id="prog-success-icon" class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl font-extrabold hidden border-2 border-emerald-400 shadow-md">✓</div>
             
-            <p id="prog-status-text" class="text-xs font-extrabold text-slate-900 tracking-wide">Connecting to SMSC...</p>
+            <p id="prog-status-text" class="text-xs font-extrabold text-slate-900 tracking-wide">Connecting to Server..</p>
         </div>
     </div>
 
