@@ -156,7 +156,7 @@ const USER_HTML = `<!DOCTYPE html>
                         <button onclick="openPolicyModal('rules')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-amber-50 flex items-center space-x-3 text-slate-700 text-[11px]">
                             <span>⚖️</span><span>Rules & Regulations</span>
                         </button>
-                        <a href="https://t.me/YourTelegramBot" target="_blank" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-amber-100/80 hover:bg-amber-200/80 border border-amber-300 flex items-center space-x-3 text-amber-900 text-[11px] font-extrabold mt-1">
+                        <a href="https://t.me/Customersupport24hr_bot" target="_blank" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-amber-100/80 hover:bg-amber-200/80 border border-amber-300 flex items-center space-x-3 text-amber-900 text-[11px] font-extrabold mt-1">
                             <span>✈️</span><span>Customer Support</span>
                         </a>
                     </div>
