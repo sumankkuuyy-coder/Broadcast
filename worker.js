@@ -3,339 +3,460 @@ const USER_HTML = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BSNL Mobile App Portal</title>
+    <title>BSNL Broadcast & Wallet App</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .glass-card { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .wallet-gradient-sms { background: linear-gradient(135deg, #059669 0%, #047857 50%, #064e3b 100%); }
+        .wallet-gradient-earn { background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #0c4a6e 100%); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="bg-gray-900 min-h-screen text-gray-100 flex flex-col items-center justify-center p-0 sm:p-4 font-sans">
+<body class="bg-[#070b14] min-h-screen text-slate-100 flex flex-col items-center justify-center p-0 sm:p-4">
 
-    <!-- MOBILE APP CONTAINER FRAME -->
-    <div class="w-full max-w-md bg-gray-950 min-h-screen sm:min-h-[85vh] sm:rounded-3xl shadow-2xl flex flex-col relative overflow-hidden border border-gray-800">
+    <!-- MOBILE APP SHELL -->
+    <div class="w-full max-w-md bg-[#0b1120] min-h-screen sm:min-h-[86vh] sm:max-h-[90vh] sm:rounded-[2.2rem] shadow-[0_0_50px_rgba(16,185,129,0.12)] flex flex-col relative overflow-hidden border border-slate-800/80">
 
-        <!-- AUTH VIEW (LOGIN / REGISTER) -->
-        <div id="auth-container" class="flex-1 flex flex-col justify-center p-6 space-y-6 my-auto">
+        <!-- AMBIENT BACKGROUND GLOW -->
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/2 -left-24 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- ==================== AUTH SCREEN (LOGIN / REGISTER) ==================== -->
+        <div id="auth-container" class="flex-1 flex flex-col justify-center p-6 space-y-6 my-auto relative z-10">
             <div class="text-center space-y-3">
-                <div class="flex justify-center">
-                    <img src="https://i.ibb.co/C5VBSGcV/BSNL-New-Logo.png" alt="BSNL Logo" class="h-14 object-contain bg-white p-1 rounded-xl shadow">
+                <div class="inline-flex p-2.5 bg-white rounded-2xl shadow-lg shadow-emerald-950/50">
+                    <img src="https://i.ibb.co/C5VBSGcV/BSNL-New-Logo.png" alt="BSNL Logo" class="h-12 object-contain">
                 </div>
-                <h1 class="text-base font-bold text-gray-200 uppercase tracking-wider">BSNL Secure Portal</h1>
+                <div>
+                    <h1 class="text-lg font-extrabold text-white tracking-tight">BSNL Partner Portal</h1>
+                    <p class="text-xs text-slate-400">Next-Gen SMS Broadcast & Rewards</p>
+                </div>
                 
-                <!-- TOGGLE SWITCH -->
-                <div class="bg-gray-900 p-1 rounded-xl flex relative mt-3 border border-gray-800">
-                    <div id="toggle-bg" class="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-emerald-600 rounded-lg transition-all duration-300 shadow-sm left-1"></div>
-                    <button onclick="switchAuthTab('login')" id="btn-tab-login" class="flex-1 py-2 text-xs font-bold relative z-10 text-white transition-colors">Login</button>
-                    <button onclick="switchAuthTab('register')" id="btn-tab-register" class="flex-1 py-2 text-xs font-bold relative z-10 text-gray-400 transition-colors">Register</button>
+                <!-- PREMIUM TOGGLE SWITCH -->
+                <div class="bg-slate-900/90 p-1.5 rounded-2xl flex relative mt-4 border border-slate-800 shadow-inner">
+                    <div id="toggle-bg" class="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl transition-all duration-300 shadow-md left-1.5"></div>
+                    <button onclick="switchAuthTab('login')" id="btn-tab-login" class="flex-1 py-2.5 text-xs font-bold relative z-10 text-white transition-colors">Login</button>
+                    <button onclick="switchAuthTab('register')" id="btn-tab-register" class="flex-1 py-2.5 text-xs font-bold relative z-10 text-slate-400 transition-colors">Register</button>
                 </div>
             </div>
 
-            <!-- LOGIN BOX -->
-            <div id="login-box" class="space-y-4">
-                <form onsubmit="handleLogin(event)" class="space-y-3.5">
+            <!-- LOGIN FORM -->
+            <div id="login-box" class="glass-card rounded-3xl p-5 space-y-4 shadow-xl">
+                <form onsubmit="handleLogin(event)" class="space-y-4">
                     <div>
-                        <label class="block text-[11px] font-bold uppercase text-gray-400 mb-1">Mobile Number</label>
-                        <input type="tel" id="login-mobile" required placeholder="Enter mobile" class="w-full px-3.5 py-3 bg-gray-900 border border-gray-800 rounded-xl text-sm font-mono text-white focus:outline-none focus:border-emerald-500">
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Mobile Number</label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-3 text-slate-500 text-xs font-mono">+91</span>
+                            <input type="tel" id="login-mobile" required placeholder="9876543210" class="w-full pl-11 pr-4 py-3 bg-slate-950/80 border border-slate-800 rounded-xl text-sm font-mono text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                        </div>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold uppercase text-gray-400 mb-1">Password</label>
-                        <input type="password" id="login-password" required placeholder="Enter password" class="w-full px-3.5 py-3 bg-gray-900 border border-gray-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-3 bg-slate-950/80 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors">
                     </div>
-                    <button type="submit" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow-lg transition-all mt-2">Login to App</button>
+                    <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl text-sm shadow-lg shadow-emerald-600/25 active:scale-[0.98] transition-all">Sign In →</button>
                 </form>
             </div>
 
-            <!-- REGISTER BOX (No PAN) -->
-            <div id="register-box" class="space-y-3 hidden">
-                <form onsubmit="handleRegister(event)" class="space-y-3">
+            <!-- REGISTER FORM (NO PAN) -->
+            <div id="register-box" class="glass-card rounded-3xl p-5 space-y-4 shadow-xl hidden">
+                <form onsubmit="handleRegister(event)" class="space-y-3.5">
                     <div>
-                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1">Full Name</label>
-                        <input type="text" id="reg-name" required placeholder="Enter name" class="w-full px-3 py-2.5 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white">
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Full Name</label>
+                        <input type="text" id="reg-name" required placeholder="Enter your full name" class="w-full px-4 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1">Mobile Number</label>
-                        <input type="tel" id="reg-mobile" required placeholder="Enter mobile" class="w-full px-3 py-2.5 bg-gray-900 border border-gray-800 rounded-xl text-xs font-mono text-white">
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Mobile Number</label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-2.5 text-slate-500 text-xs font-mono">+91</span>
+                            <input type="tel" id="reg-mobile" required placeholder="10-digit mobile" class="w-full pl-11 pr-4 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-emerald-500">
+                        </div>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1">Password</label>
-                        <input type="password" id="reg-password" required placeholder="Create password" class="w-full px-3 py-2.5 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white">
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Create Password</label>
+                        <input type="password" id="reg-password" required placeholder="Strong password" class="w-full px-4 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
                     </div>
-                    <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow-lg mt-1">Register Now</button>
+                    <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl text-sm shadow-lg shadow-emerald-600/25 active:scale-[0.98] transition-all mt-1">Create Account</button>
                 </form>
             </div>
         </div>
 
-        <!-- APP DASHBOARD CONTAINER -->
-        <div id="app-dashboard" class="flex-1 flex flex-col hidden relative">
+        <!-- ==================== MAIN APP DASHBOARD ==================== -->
+        <div id="app-dashboard" class="flex-1 flex flex-col hidden relative z-10 overflow-hidden">
             
-            <!-- APP HEADER -->
-            <div class="bg-gray-900 px-4 py-3.5 flex items-center justify-between border-b border-gray-800 sticky top-0 z-20">
+            <!-- TOP APP BAR (3-LINE MENU LEFT + FIXED BSNL LOGO RIGHT) -->
+            <div class="bg-slate-900/90 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-slate-800/80 sticky top-0 z-20">
                 <div class="flex items-center space-x-3">
-                    <button onclick="toggleSidebar(true)" class="text-gray-300 hover:text-white p-1">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <button onclick="toggleSidebar(true)" class="p-2 bg-slate-800/80 hover:bg-slate-800 rounded-xl text-slate-200 active:scale-95 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h12M4 18h16"></path></svg>
                     </button>
                     <div>
-                        <h2 id="app-header-title" class="text-sm font-bold text-white">Home</h2>
+                        <h2 id="app-header-title" class="text-sm font-extrabold text-white tracking-tight">Home</h2>
                         <p class="text-[10px] text-emerald-400 font-mono" id="app-header-mobile"></p>
                     </div>
                 </div>
-                <img src="https://i.ibb.co/C5VBSGcV/BSNL-New-Logo.png" alt="BSNL Logo" class="h-7 bg-white p-0.5 rounded-md shadow">
-            </div>
-
-            <!-- SIDEBAR DRAWER (3-LINE MENU) -->
-            <div id="sidebar-backdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-black/70 z-40 hidden transition-opacity"></div>
-            <div id="sidebar-drawer" class="fixed top-0 left-0 bottom-0 w-72 bg-gray-950 border-r border-gray-800 z-50 transform -translate-x-full transition-transform duration-300 flex flex-col">
-                <div class="p-5 bg-emerald-900/40 border-b border-gray-800 flex items-center justify-between">
-                    <div>
-                        <h3 id="sidebar-user-name" class="font-bold text-sm text-white">User Name</h3>
-                        <p id="sidebar-user-mob" class="text-xs text-emerald-300 font-mono">Mobile</p>
-                    </div>
-                    <button onclick="toggleSidebar(false)" class="text-gray-400 hover:text-white text-base">✕</button>
-                </div>
-                <div class="p-3 space-y-1.5 flex-1 overflow-y-auto text-xs font-semibold">
-                    <button onclick="navigateTo('home')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-900 flex items-center space-x-3 text-gray-200"><span>🏠</span><span>Home</span></button>
-                    <button onclick="navigateTo('wallet')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-900 flex items-center space-x-3 text-gray-200"><span>💰</span><span>Wallets (SMS & Earning)</span></button>
-                    <button onclick="navigateTo('kyc')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-900 flex items-center space-x-3 text-gray-200"><span>🪪</span><span>KYC & Bank Details</span></button>
-                    <button onclick="navigateTo('history')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-900 flex items-center space-x-3 text-gray-200"><span>📊</span><span>Transaction History</span></button>
-                    
-                    <div class="pt-3 border-t border-gray-800 space-y-1.5">
-                        <button onclick="openPolicyModal('terms')" class="w-full text-left px-4 py-2.5 rounded-xl hover:bg-gray-900 flex items-center space-x-3 text-gray-300 text-[11px]"><span>📄</span><span>Terms & Conditions</span></button>
-                        <button onclick="openPolicyModal('refund')" class="w-full text-left px-4 py-2.5 rounded-xl hover:bg-gray-900 flex items-center space-x-3 text-gray-300 text-[11px]"><span>🔄</span><span>Refund Policy</span></button>
-                        <a href="https://t.me/YourTelegramBot" target="_blank" class="w-full text-left px-4 py-2.5 rounded-xl hover:bg-gray-900 flex items-center space-x-3 text-sky-400 text-[11px]"><span>💬</span><span>Customer Support (Telegram)</span></a>
-                    </div>
-                </div>
-
-                <!-- App Store Badges at Bottom of Sidebar -->
-                <div class="p-4 border-t border-gray-800 space-y-3">
-                    <div class="flex gap-2 justify-center">
-                        <div class="bg-gray-900 border border-gray-800 px-3 py-1.5 rounded-lg text-center cursor-pointer hover:bg-gray-800">
-                            <p class="text-[8px] text-gray-400 uppercase">Get it on</p>
-                            <p class="text-[10px] font-bold text-white">Google Play</p>
-                        </div>
-                        <div class="bg-gray-900 border border-gray-800 px-3 py-1.5 rounded-lg text-center cursor-pointer hover:bg-gray-800">
-                            <p class="text-[8px] text-gray-400 uppercase">Download on</p>
-                            <p class="text-[10px] font-bold text-white">App Store</p>
-                        </div>
-                    </div>
-                    <button onclick="logout()" class="w-full py-2.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 font-bold rounded-xl text-xs border border-red-800/50">Logout</button>
+                <!-- FIXED TOP-RIGHT LOGO -->
+                <div class="bg-white px-2 py-1 rounded-xl shadow-md">
+                    <img src="https://i.ibb.co/C5VBSGcV/BSNL-New-Logo.png" alt="BSNL Logo" class="h-6 object-contain">
                 </div>
             </div>
 
-            <!-- MAIN CONTENT AREA -->
-            <div class="flex-1 p-4 overflow-y-auto space-y-4 pb-20">
-
-                <!-- 1. HOME SECTION -->
-                <div id="sec-home" class="space-y-4">
-                    <!-- SMS Wallet & Add Fund Button Header -->
-                    <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl flex justify-between items-center">
+            <!-- ==================== LEFT 3-LINE SIDEBAR DRAWER ==================== -->
+            <div id="sidebar-backdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-black/75 backdrop-blur-xs z-40 hidden transition-opacity"></div>
+            <div id="sidebar-drawer" class="fixed top-0 left-0 bottom-0 w-72 bg-[#0b1120] border-r border-slate-800 z-50 transform -translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+                <!-- Profile Banner -->
+                <div class="p-5 bg-gradient-to-br from-emerald-900/50 to-slate-900 border-b border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-extrabold text-base" id="sidebar-avatar">U</div>
                         <div>
-                            <p class="text-[10px] uppercase font-bold text-emerald-400">SMS Wallet Balance</p>
-                            <p id="home-sms-wallet" class="text-lg font-bold text-white font-mono mt-0.5">₹0.00</p>
+                            <h3 id="sidebar-user-name" class="font-bold text-sm text-white">User Name</h3>
+                            <p id="sidebar-user-mob" class="text-[11px] text-emerald-400 font-mono">Mobile</p>
                         </div>
-                        <button onclick="openQrModal()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow">➕ Add Fund</button>
+                    </div>
+                    <button onclick="toggleSidebar(false)" class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs">✕</button>
+                </div>
+
+                <!-- Navigation Items -->
+                <div class="p-3 space-y-1 flex-1 overflow-y-auto no-scrollbar text-xs font-semibold">
+                    <button onclick="navigateTo('home')" class="w-full text-left px-3.5 py-3 rounded-xl hover:bg-slate-900 flex items-center space-x-3 text-slate-200 transition">
+                        <span class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">🏠</span>
+                        <span>Home</span>
+                    </button>
+                    <button onclick="navigateTo('wallet')" class="w-full text-left px-3.5 py-3 rounded-xl hover:bg-slate-900 flex items-center space-x-3 text-slate-200 transition">
+                        <span class="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center">💳</span>
+                        <span>Wallets</span>
+                    </button>
+                    <button onclick="navigateTo('kyc')" class="w-full text-left px-3.5 py-3 rounded-xl hover:bg-slate-900 flex items-center space-x-3 text-slate-200 transition">
+                        <span class="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">🪪</span>
+                        <span>KYC Verification</span>
+                    </button>
+                    <button onclick="navigateTo('history')" class="w-full text-left px-3.5 py-3 rounded-xl hover:bg-slate-900 flex items-center space-x-3 text-slate-200 transition">
+                        <span class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">📊</span>
+                        <span>History</span>
+                    </button>
+                    
+                    <!-- Legal & Support Links -->
+                    <div class="pt-3 mt-2 border-t border-slate-800/80 space-y-1">
+                        <p class="px-3.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Help & Policies</p>
+                        <button onclick="openPolicyModal('terms')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-900 flex items-center space-x-3 text-slate-300 text-[11px]">
+                            <span>📄</span><span>Terms & Conditions</span>
+                        </button>
+                        <button onclick="openPolicyModal('refund')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-900 flex items-center space-x-3 text-slate-300 text-[11px]">
+                            <span>🔄</span><span>Refund Policy</span>
+                        </button>
+                        <a href="https://t.me/YourTelegramBot" target="_blank" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 flex items-center space-x-3 text-sky-400 text-[11px] font-bold mt-1">
+                            <span>✈️</span><span>Customer Support</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- App Store Badges & Logout -->
+                <div class="p-4 border-t border-slate-800/80 space-y-3 bg-slate-950/60">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl flex items-center space-x-2 cursor-pointer hover:border-slate-700">
+                            <span class="text-base">▶️</span>
+                            <div>
+                                <p class="text-[8px] text-slate-400 leading-none">GET IT ON</p>
+                                <p class="text-[10px] font-bold text-white mt-0.5">Google Play</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl flex items-center space-x-2 cursor-pointer hover:border-slate-700">
+                            <span class="text-base"></span>
+                            <div>
+                                <p class="text-[8px] text-slate-400 leading-none">Download on</p>
+                                <p class="text-[10px] font-bold text-white mt-0.5">App Store</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="w-full py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold rounded-xl text-xs border border-red-500/20 transition">Sign Out</button>
+                </div>
+            </div>
+
+            <!-- ==================== SCROLLABLE CONTENT AREA ==================== -->
+            <div class="flex-1 p-4 overflow-y-auto no-scrollbar space-y-4 pb-24">
+
+                <!-- 1. HOME SCREEN -->
+                <div id="sec-home" class="space-y-4">
+                    <!-- SMS Wallet Hero Card + Add Fund Button -->
+                    <div class="wallet-gradient-sms p-5 rounded-3xl shadow-lg shadow-emerald-950/50 border border-emerald-400/20 flex items-center justify-between relative overflow-hidden">
+                        <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl"></div>
+                        <div>
+                            <span class="px-2 py-0.5 bg-black/25 rounded-md text-[9px] font-bold uppercase tracking-wider text-emerald-100">Active SMS Balance</span>
+                            <p id="home-sms-wallet" class="text-2xl font-extrabold text-white font-mono mt-1.5">₹0.00</p>
+                        </div>
+                        <button onclick="openQrModal()" class="px-4 py-3 bg-white text-emerald-900 hover:bg-emerald-50 font-extrabold rounded-2xl text-xs shadow-lg active:scale-95 transition flex items-center space-x-1.5 relative z-10">
+                            <span>➕</span><span>Add Fund</span>
+                        </button>
                     </div>
 
-                    <!-- SMS Broadcast Form -->
-                    <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl space-y-3">
-                        <h3 class="text-xs font-bold text-teal-400 uppercase">⚡ Send SMS Campaign</h3>
-                        <form onsubmit="handleSendSms(event)" class="space-y-2.5">
-                            <div>
-                                <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1">Recipients (Auto Masked 6-Digit)</label>
-                                <input type="text" id="sms-recipients" required readonly class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-emerald-300 font-mono">
+                    <!-- SMS Broadcast Console Card -->
+                    <div class="glass-card p-5 rounded-3xl space-y-4 shadow-xl">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <h3 class="text-xs font-extrabold text-white uppercase tracking-wider">Bulk SMS Terminal</h3>
                             </div>
+                            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">GATEWAY READY</span>
+                        </div>
+
+                        <form onsubmit="handleSendSms(event)" class="space-y-3.5">
                             <div>
-                                <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1">Promotional Message (Read-Only)</label>
-                                <textarea id="sms-message" required readonly rows="3" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-gray-300 resize-none">Special BSNL 5G Network Expansion Offer! Recharge now & get unlimited benefits across India. Click to activate: https://bsnl.co.in</textarea>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Target Recipients</label>
+                                    <button type="button" onclick="generateMaskedNumbers()" class="text-[10px] text-emerald-400 font-bold hover:underline">↻ Refresh List</button>
+                                </div>
+                                <input type="text" id="sms-recipients" required readonly class="w-full px-3.5 py-2.5 bg-slate-950/90 border border-slate-800 rounded-xl text-xs text-emerald-300 font-mono">
                             </div>
-                            <button type="submit" id="send-sms-btn" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow">Send SMS</button>
+
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Approved Promotional Template</label>
+                                <div class="relative">
+                                    <textarea id="sms-message" required readonly rows="3" class="w-full px-3.5 py-2.5 bg-slate-950/90 border border-slate-800 rounded-xl text-xs text-slate-300 resize-none leading-relaxed">Special BSNL 5G Network Expansion Offer! Recharge now & get unlimited benefits across India. Click to activate: https://bsnl.co.in</textarea>
+                                    <span class="absolute bottom-2 right-2.5 text-[9px] font-bold uppercase bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">Locked</span>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="send-sms-btn" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-2xl text-xs shadow-lg shadow-emerald-600/25 active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+                                <span>🚀</span><span>Send SMS Now</span>
+                            </button>
                         </form>
                     </div>
                 </div>
 
-                <!-- 2. WALLET SECTION -->
+                <!-- 2. WALLETS SCREEN -->
                 <div id="sec-wallet" class="space-y-4 hidden">
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="bg-gray-900 border border-gray-800 p-3 rounded-2xl text-center">
-                            <p class="text-[9px] uppercase font-bold text-emerald-400">SMS Wallet</p>
-                            <p id="val-sms-wallet" class="text-sm font-bold text-white mt-1 font-mono">₹0.00</p>
+                    <!-- SMS Wallet Card -->
+                    <div class="wallet-gradient-sms p-5 rounded-3xl shadow-lg border border-emerald-400/20 flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] uppercase font-bold tracking-wider text-emerald-200">SMS Wallet (Includes Bonus)</p>
+                            <p id="val-sms-wallet" class="text-2xl font-extrabold text-white font-mono mt-1">₹0.00</p>
                         </div>
-                        <div onclick="navigateTo('wallet')" class="bg-gray-900 border border-emerald-500/50 p-3 rounded-2xl text-center cursor-pointer">
-                            <p class="text-[9px] uppercase font-bold text-teal-400">Earning Wallet</p>
-                            <p id="val-earning-wallet" class="text-sm font-bold text-white mt-1 font-mono">₹0.00</p>
-                        </div>
-                        <div class="bg-gray-900 border border-gray-800 p-3 rounded-2xl text-center">
-                            <p class="text-[9px] uppercase font-bold text-amber-400">Bonus</p>
-                            <p id="val-bonus-wallet" class="text-sm font-bold text-white mt-1 font-mono">₹0.00</p>
-                            <span class="text-[8px] text-gray-400 block mt-0.5">(Adds to SMS)</span>
+                        <button onclick="openQrModal()" class="px-3.5 py-2.5 bg-white/15 hover:bg-white/25 text-white font-bold rounded-xl text-xs backdrop-blur-xs border border-white/20">➕ Add Fund</button>
+                    </div>
+
+                    <!-- Earning Wallet Card (Clickable) -->
+                    <div onclick="document.getElementById('wit-amount').focus()" class="wallet-gradient-earn p-5 rounded-3xl shadow-lg border border-sky-400/20 cursor-pointer relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[10px] uppercase font-bold tracking-wider text-sky-200">Earning Wallet (Withdrawable)</p>
+                                <p id="val-earning-wallet" class="text-2xl font-extrabold text-white font-mono mt-1">₹0.00</p>
+                            </div>
+                            <span class="px-2.5 py-1 bg-black/25 rounded-lg text-[10px] font-bold text-sky-100">Available</span>
                         </div>
                     </div>
 
-                    <!-- Withdrawal Card -->
-                    <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl space-y-3">
-                        <h3 class="text-xs font-bold text-teal-400 uppercase">💸 Request Withdrawal (Earning Balance)</h3>
-                        <p class="text-[10px] text-gray-400">Min withdrawal: ₹5,000 | Max withdrawal: ₹50,000</p>
-                        <form onsubmit="startWithdrawalProcess(event)" class="space-y-2.5">
-                            <input type="number" step="1" id="wit-amount" required placeholder="Enter Amount (₹5k - ₹50k)" class="w-full px-3 py-2.5 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white font-mono">
-                            <button type="submit" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs">Proceed to Withdrawal</button>
+                    <!-- Withdraw Form Card -->
+                    <div class="glass-card p-5 rounded-3xl space-y-3.5 shadow-xl">
+                        <h3 class="text-xs font-extrabold text-sky-400 uppercase tracking-wider">💸 Withdraw Earning Balance</h3>
+                        <form onsubmit="startWithdrawalProcess(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Enter Amount (₹)</label>
+                                <input type="number" step="1" id="wit-amount" required placeholder="Enter withdrawal amount" class="w-full px-4 py-3 bg-slate-950/90 border border-slate-800 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-sky-500">
+                            </div>
+                            <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold rounded-xl text-xs shadow-lg shadow-sky-600/25 active:scale-[0.98] transition">Preview & Withdraw →</button>
                         </form>
                     </div>
                 </div>
 
-                <!-- 3. KYC SECTION -->
+                <!-- 3. KYC SCREEN -->
                 <div id="sec-kyc" class="space-y-4 hidden">
-                    <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl space-y-3">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-xs font-bold text-emerald-400 uppercase">🪪 KYC & Bank Details</h3>
-                            <span id="kyc-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">Not Submitted</span>
+                    <div class="glass-card p-5 rounded-3xl space-y-4 shadow-xl">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <div>
+                                <h3 class="text-xs font-extrabold text-white uppercase tracking-wider">🪪 KYC & Bank Link</h3>
+                                <p class="text-[10px] text-slate-400 mt-0.5">Step-by-step identity verification</p>
+                            </div>
+                            <span id="kyc-status-badge" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">Unverified</span>
                         </div>
-                        <p class="text-[11px] text-gray-400">Fill details step-by-step. Once verified, details are locked.</p>
                         
-                        <form id="kyc-form" onsubmit="handleKycSubmit(event)" class="space-y-2.5">
+                        <form id="kyc-form" onsubmit="handleKycSubmit(event)" class="space-y-3">
                             <div>
-                                <label class="block text-[10px] font-bold uppercase text-gray-400 mb-0.5">Aadhaar Number</label>
-                                <input type="text" id="kyc-aadhaar" required placeholder="Enter 12-digit Aadhaar" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white font-mono">
+                                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Step 1: Aadhaar Number</label>
+                                <input type="text" id="kyc-aadhaar" required maxlength="12" placeholder="12-digit Aadhaar number" class="w-full px-3.5 py-2.5 bg-slate-950/90 border border-slate-800 rounded-xl text-xs text-white font-mono">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold uppercase text-gray-400 mb-0.5">PAN Number</label>
-                                <input type="text" id="kyc-pan" required placeholder="Enter PAN number" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white font-mono uppercase">
+                                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Step 2: PAN Number</label>
+                                <input type="text" id="kyc-pan" required maxlength="10" placeholder="ABCDE1234F" class="w-full px-3.5 py-2.5 bg-slate-950/90 border border-slate-800 rounded-xl text-xs text-white font-mono uppercase">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold uppercase text-gray-400 mb-0.5">Account Holder Name</label>
-                                <input type="text" id="kyc-acc-name" required placeholder="As per bank passbook" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white">
+                                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Step 3: Account Holder Name</label>
+                                <input type="text" id="kyc-acc-name" required placeholder="Full name as per bank" class="w-full px-3.5 py-2.5 bg-slate-950/90 border border-slate-800 rounded-xl text-xs text-white">
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
+                            <div class="grid grid-cols-2 gap-2.5">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-gray-400 mb-0.5">Account Number</label>
-                                    <input type="text" id="kyc-acc-no" required placeholder="Bank Account No" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white font-mono">
+                                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Step 4: Account No</label>
+                                    <input type="text" id="kyc-acc-no" required placeholder="Account number" class="w-full px-3 py-2.5 bg-slate-950/90 border border-slate-800 rounded-xl text-xs text-white font-mono">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-gray-400 mb-0.5">IFSC Code</label>
-                                    <input type="text" id="kyc-ifsc" required placeholder="IFSC Code" class="w-full px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-white font-mono uppercase">
+                                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Step 5: IFSC Code</label>
+                                    <input type="text" id="kyc-ifsc" required placeholder="SBIN0001234" class="w-full px-3 py-2.5 bg-slate-950/90 border border-slate-800 rounded-xl text-xs text-white font-mono uppercase">
                                 </div>
                             </div>
-                            <button type="submit" id="kyc-submit-btn" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow mt-2">Submit & Verify KYC</button>
+                            <button type="submit" id="kyc-submit-btn" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl text-xs shadow-lg mt-2">Verify & Lock KYC</button>
                         </form>
 
-                        <div id="bank-change-container" class="hidden pt-2 border-t border-gray-800">
-                            <button onclick="openBankChangeModal()" class="w-full py-2 bg-gray-800 hover:bg-gray-700 text-teal-400 font-bold rounded-xl text-xs border border-teal-500/30">🔄 Change Bank Account (Acc No / IFSC)</button>
+                        <div id="bank-change-container" class="hidden pt-3 border-t border-slate-800">
+                            <button onclick="openBankChangeModal()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-sky-400 font-bold rounded-xl text-xs border border-sky-500/30 transition flex items-center justify-center space-x-2">
+                                <span>🏦</span><span>Change Bank Account</span>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 4. HISTORY SECTION -->
+                <!-- 4. HISTORY SCREEN -->
                 <div id="sec-history" class="space-y-4 hidden">
-                    <div class="bg-gray-900 p-1 rounded-xl flex border border-gray-800 text-[11px]">
-                        <button onclick="switchHistoryTab('deposits')" id="hist-btn-dep" class="flex-1 py-2 font-bold rounded-lg bg-emerald-600 text-white transition-all">Deposits</button>
-                        <button onclick="switchHistoryTab('withdrawals')" id="hist-btn-wit" class="flex-1 py-2 font-bold rounded-lg text-gray-400 transition-all">Withdrawals</button>
-                        <button onclick="switchHistoryTab('sms')" id="hist-btn-sms" class="flex-1 py-2 font-bold rounded-lg text-gray-400 transition-all">SMS Logs</button>
+                    <!-- Toggle Switch -->
+                    <div class="bg-slate-900/90 p-1.5 rounded-2xl flex border border-slate-800 text-[11px] shadow-inner">
+                        <button onclick="switchHistoryTab('deposits')" id="hist-btn-dep" class="flex-1 py-2 font-bold rounded-xl bg-emerald-600 text-white shadow transition-all">Deposits</button>
+                        <button onclick="switchHistoryTab('withdrawals')" id="hist-btn-wit" class="flex-1 py-2 font-bold rounded-xl text-slate-400 transition-all">Withdrawals</button>
+                        <button onclick="switchHistoryTab('sms')" id="hist-btn-sms" class="flex-1 py-2 font-bold rounded-xl text-slate-400 transition-all">SMS Logs</button>
                     </div>
 
                     <div id="history-content-list" class="space-y-2.5">
-                        <p class="text-center text-xs text-gray-500 py-6">Loading history...</p>
+                        <p class="text-center text-xs text-slate-500 py-8">Loading records...</p>
                     </div>
                 </div>
 
             </div>
 
-            <!-- BOTTOM NAVIGATION BAR -->
-            <div class="absolute bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 p-2 flex justify-around items-center z-10">
-                <button onclick="navigateTo('home')" class="flex flex-col items-center text-gray-400 hover:text-emerald-400 text-[10px] space-y-0.5">
+            <!-- BOTTOM APP NAVIGATION BAR -->
+            <div class="absolute bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800/90 px-2 py-2 flex justify-around items-center z-20">
+                <button onclick="navigateTo('home')" id="nav-btn-home" class="flex flex-col items-center text-emerald-400 text-[10px] font-bold space-y-1 px-3 py-1 rounded-xl">
                     <span class="text-base">🏠</span><span>Home</span>
                 </button>
-                <button onclick="navigateTo('wallet')" class="flex flex-col items-center text-gray-400 hover:text-emerald-400 text-[10px] space-y-0.5">
-                    <span class="text-base">💰</span><span>Wallet</span>
+                <button onclick="navigateTo('wallet')" id="nav-btn-wallet" class="flex flex-col items-center text-slate-400 hover:text-emerald-400 text-[10px] font-semibold space-y-1 px-3 py-1 rounded-xl">
+                    <span class="text-base">💳</span><span>Wallet</span>
                 </button>
-                <button onclick="navigateTo('kyc')" class="flex flex-col items-center text-gray-400 hover:text-emerald-400 text-[10px] space-y-0.5">
+                <button onclick="navigateTo('kyc')" id="nav-btn-kyc" class="flex flex-col items-center text-slate-400 hover:text-emerald-400 text-[10px] font-semibold space-y-1 px-3 py-1 rounded-xl">
                     <span class="text-base">🪪</span><span>KYC</span>
                 </button>
-                <button onclick="navigateTo('history')" class="flex flex-col items-center text-gray-400 hover:text-emerald-400 text-[10px] space-y-0.5">
+                <button onclick="navigateTo('history')" id="nav-btn-history" class="flex flex-col items-center text-slate-400 hover:text-emerald-400 text-[10px] font-semibold space-y-1 px-3 py-1 rounded-xl">
                     <span class="text-base">📊</span><span>History</span>
                 </button>
             </div>
         </div>
-
     </div>
 
-    <!-- FULL SCREEN QR MODAL -->
-    <div id="qr-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4">
-        <div class="bg-gray-950 border border-gray-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl flex flex-col items-center relative space-y-4">
-            <button onclick="closeQrModal()" class="absolute top-4 right-4 bg-gray-900 hover:bg-gray-800 text-gray-300 w-8 h-8 rounded-full font-bold flex items-center justify-center text-sm">✕</button>
+    <!-- ==================== FULL-SCREEN QR MODAL WITH UPI APPS ==================== -->
+    <div id="qr-modal" class="fixed inset-0 bg-[#070b14]/95 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4">
+        <div class="bg-[#0f172a] border border-slate-800 w-full max-w-sm rounded-[2rem] p-6 shadow-2xl flex flex-col items-center relative space-y-4">
+            <button onclick="closeQrModal()" class="absolute top-4 right-4 bg-slate-800 hover:bg-slate-700 text-slate-300 w-8 h-8 rounded-full font-bold flex items-center justify-center text-sm">✕</button>
             
             <div class="text-center">
-                <h3 class="text-base font-bold text-emerald-400">Scan & Pay via Any UPI App</h3>
-                <p class="text-[11px] text-gray-400 mt-0.5">GPay, PhonePe, Paytm, BHIM</p>
+                <span class="px-2.5 py-0.5 bg-emerald-500/15 text-emerald-400 rounded-full text-[10px] font-bold uppercase">Instant UPI Deposit</span>
+                <h3 class="text-base font-extrabold text-white mt-1.5">Scan & Pay Any Amount</h3>
             </div>
 
-            <div class="bg-white p-2 border-2 border-emerald-500 rounded-2xl shadow-inner">
-                <img src="https://i.ibb.co/qLGftMvF/IMG-20261116-120334.jpg" alt="Payment QR" class="w-60 h-60 object-contain rounded-xl">
+            <div class="bg-white p-2.5 border-4 border-emerald-500 rounded-3xl shadow-xl">
+                <img src="https://i.ibb.co/qLGftMvF/IMG-20261116-120334.jpg" alt="Payment QR" class="w-56 h-56 object-contain rounded-2xl">
             </div>
 
-            <form onsubmit="handleDepositRequest(event)" class="w-full space-y-2.5">
-                <input type="number" step="1" id="dep-amount" required placeholder="Enter Paid Amount (₹)" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white font-mono">
-                <input type="text" id="dep-utr" required placeholder="Enter UTR / Transaction ID" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white font-mono">
-                <button type="submit" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow">Submit Deposit Request</button>
+            <!-- UPI App Icons Row -->
+            <div class="w-full">
+                <p class="text-[10px] text-center font-bold uppercase tracking-wider text-slate-400 mb-2">Pay Using Any UPI App</p>
+                <div class="grid grid-cols-4 gap-2 text-center">
+                    <a href="upi://pay" class="bg-slate-900 border border-slate-800 p-2 rounded-xl hover:border-blue-500/50 transition">
+                        <div class="w-7 h-7 mx-auto rounded-full bg-blue-500/20 text-blue-400 font-extrabold text-xs flex items-center justify-center">G</div>
+                        <p class="text-[9px] font-bold text-slate-300 mt-1">GPay</p>
+                    </a>
+                    <a href="upi://pay" class="bg-slate-900 border border-slate-800 p-2 rounded-xl hover:border-purple-500/50 transition">
+                        <div class="w-7 h-7 mx-auto rounded-full bg-purple-500/20 text-purple-400 font-extrabold text-xs flex items-center justify-center">Pe</div>
+                        <p class="text-[9px] font-bold text-slate-300 mt-1">PhonePe</p>
+                    </a>
+                    <a href="upi://pay" class="bg-slate-900 border border-slate-800 p-2 rounded-xl hover:border-sky-500/50 transition">
+                        <div class="w-7 h-7 mx-auto rounded-full bg-sky-500/20 text-sky-400 font-extrabold text-xs flex items-center justify-center">Py</div>
+                        <p class="text-[9px] font-bold text-slate-300 mt-1">Paytm</p>
+                    </a>
+                    <a href="upi://pay" class="bg-slate-900 border border-slate-800 p-2 rounded-xl hover:border-orange-500/50 transition">
+                        <div class="w-7 h-7 mx-auto rounded-full bg-orange-500/20 text-orange-400 font-extrabold text-xs flex items-center justify-center">B</div>
+                        <p class="text-[9px] font-bold text-slate-300 mt-1">BHIM</p>
+                    </a>
+                </div>
+            </div>
+
+            <form onsubmit="handleDepositRequest(event)" class="w-full space-y-2.5 pt-2 border-t border-slate-800">
+                <input type="number" step="1" id="dep-amount" required placeholder="Enter Paid Amount (₹)" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono">
+                <input type="text" id="dep-utr" required placeholder="Enter 12-Digit UTR Number" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono">
+                <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl text-xs shadow-lg">Submit Deposit Request</button>
             </form>
         </div>
     </div>
 
-    <!-- WITHDRAWAL PREVIEW MODAL -->
-    <div id="withdraw-preview-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4">
-        <div class="bg-gray-950 border border-gray-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="font-bold text-sm text-emerald-400">🔍 Withdrawal Preview</h3>
-                <button onclick="closeWithdrawModal()" class="text-gray-400 text-sm">✕</button>
+    <!-- ==================== WITHDRAWAL PREVIEW MODAL ==================== -->
+    <div id="withdraw-preview-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex flex-col items-center justify-center p-4">
+        <div class="bg-[#0f172a] border border-slate-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-extrabold text-sm text-sky-400">🔍 Withdrawal Preview</h3>
+                <button onclick="closeWithdrawModal()" class="text-slate-400 text-sm">✕</button>
             </div>
             <div class="space-y-3 text-xs">
-                <div class="flex justify-between bg-gray-900 p-2.5 rounded-xl"><span class="text-gray-400">Withdraw Amount:</span><span id="prev-wit-amount" class="font-bold font-mono text-white">₹0</span></div>
-                <div class="bg-gray-900 p-3 rounded-xl space-y-1">
-                    <p class="text-[10px] uppercase font-bold text-gray-400">Linked Bank Account:</p>
-                    <p id="prev-bank-holder" class="font-bold text-white"></p>
-                    <p id="prev-bank-details" class="font-mono text-emerald-300"></p>
+                <div class="flex justify-between items-center bg-slate-900 p-3.5 rounded-2xl border border-slate-800">
+                    <span class="text-slate-400">Payout Amount:</span>
+                    <span id="prev-wit-amount" class="text-base font-extrabold font-mono text-emerald-400">₹0</span>
+                </div>
+                <div class="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 space-y-1">
+                    <p class="text-[10px] uppercase font-bold text-slate-400">Linked Bank Account:</p>
+                    <p id="prev-bank-holder" class="font-bold text-white text-sm"></p>
+                    <p id="prev-bank-details" class="font-mono text-sky-300 text-xs"></p>
                 </div>
             </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeWithdrawModal()" class="w-1/2 py-2.5 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs">Cancel</button>
-                <button onclick="confirmWithdrawal()" class="w-1/2 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">Confirm & Withdraw</button>
+            <div class="flex gap-2.5 pt-2">
+                <button onclick="closeWithdrawModal()" class="w-1/2 py-3 bg-slate-800 text-slate-300 font-bold rounded-xl text-xs">Cancel</button>
+                <button onclick="confirmWithdrawal()" class="w-1/2 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl text-xs shadow-lg">Confirm Payout</button>
             </div>
         </div>
     </div>
 
-    <!-- CHANGE BANK ACCOUNT MODAL -->
-    <div id="bank-change-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4">
-        <div class="bg-gray-950 border border-gray-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="font-bold text-sm text-teal-400">🔄 Change Bank Account</h3>
-                <button onclick="closeBankChangeModal()" class="text-gray-400 text-sm">✕</button>
+    <!-- ==================== CHANGE BANK ACCOUNT MODAL ==================== -->
+    <div id="bank-change-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex flex-col items-center justify-center p-4">
+        <div class="bg-[#0f172a] border border-slate-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-extrabold text-sm text-sky-400">🏦 Update Bank Account</h3>
+                <button onclick="closeBankChangeModal()" class="text-slate-400 text-sm">✕</button>
             </div>
             <form onsubmit="handleBankUpdate(event)" class="space-y-3">
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1">New Account Number</label>
-                    <input type="text" id="new-acc-no" required placeholder="Enter new account no" class="w-full px-3 py-2.5 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white font-mono">
+                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">New Account Number</label>
+                    <input type="text" id="new-acc-no" required placeholder="Enter new account number" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1">New IFSC Code</label>
-                    <input type="text" id="new-ifsc" required placeholder="Enter new IFSC" class="w-full px-3 py-2.5 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white font-mono uppercase">
+                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">New IFSC Code</label>
+                    <input type="text" id="new-ifsc" required placeholder="Enter new IFSC code" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono uppercase">
                 </div>
-                <button type="submit" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs shadow mt-2">Update Bank Details</button>
+                <button type="submit" class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs shadow-lg mt-2">Save Bank Details</button>
             </form>
         </div>
     </div>
 
-    <!-- POLICY MODAL -->
-    <div id="policy-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4">
-        <div class="bg-gray-950 border border-gray-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-3 relative max-h-[80vh] flex flex-col">
-            <button onclick="closePolicyModal()" class="absolute top-4 right-4 text-gray-400 text-sm font-bold">✕</button>
-            <h3 id="policy-title" class="font-bold text-sm text-emerald-400">Policy</h3>
-            <div id="policy-content" class="text-xs text-gray-300 overflow-y-auto space-y-2 flex-1 pr-1"></div>
+    <!-- ==================== POLICY MODAL ==================== -->
+    <div id="policy-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex flex-col items-center justify-center p-4">
+        <div class="bg-[#0f172a] border border-slate-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-3 relative max-h-[80vh] flex flex-col">
+            <button onclick="closePolicyModal()" class="absolute top-4 right-4 text-slate-400 text-sm font-bold">✕</button>
+            <h3 id="policy-title" class="font-extrabold text-sm text-emerald-400">Policy</h3>
+            <div id="policy-content" class="text-xs text-slate-300 overflow-y-auto space-y-2.5 flex-1 pr-1 leading-relaxed"></div>
         </div>
     </div>
 
-    <!-- CAMPAIGN PROGRESS & SUCCESS OVERLAY MODAL -->
-    <div id="campaign-progress-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4">
-        <div class="bg-gray-950 border border-gray-800 w-full max-w-xs rounded-3xl p-6 shadow-2xl flex flex-col items-center space-y-4 text-center">
+    <!-- ==================== CAMPAIGN PROGRESS & SUCCESS OVERLAY ==================== -->
+    <div id="campaign-progress-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4">
+        <div class="bg-[#0f172a] border border-slate-800 w-full max-w-xs rounded-3xl p-7 shadow-2xl flex flex-col items-center space-y-5 text-center">
+            <!-- 2s Round Spinner -->
             <div id="prog-spinner" class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-            <div id="prog-bar-container" class="w-full bg-gray-900 h-3 rounded-full overflow-hidden hidden border border-gray-800">
-                <div id="prog-fill" class="bg-emerald-500 h-full w-0 transition-all duration-[10000ms] linear"></div>
+            
+            <!-- 10s Progress Bar (No %) -->
+            <div id="prog-bar-container" class="w-full bg-slate-900 h-3 rounded-full overflow-hidden hidden border border-slate-800 p-0.5">
+                <div id="prog-fill" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-0 rounded-full transition-all duration-[10000ms] linear"></div>
             </div>
-            <div id="prog-success-icon" class="w-14 h-14 bg-emerald-600/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl font-bold hidden border border-emerald-500/40">✓</div>
-            <p id="prog-status-text" class="text-xs font-bold text-gray-200">Initiating Campaign...</p>
+            
+            <!-- Success Icon -->
+            <div id="prog-success-icon" class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-3xl font-extrabold hidden border-2 border-emerald-500/50 shadow-lg shadow-emerald-500/20">✓</div>
+            
+            <p id="prog-status-text" class="text-xs font-extrabold text-white tracking-wide">Connecting to SMSC...</p>
         </div>
     </div>
 
@@ -345,10 +466,10 @@ const USER_HTML = `<!DOCTYPE html>
         function generateMaskedNumbers() {
             const prefixes = ['8', '6', '7', '9'];
             let numbers = [];
-            for(let i=0; i<5; i++) {
+            for(let i=0; i<4; i++) {
                 let p = prefixes[Math.floor(Math.random() * prefixes.length)];
-                let rand = Math.floor(10000 + Math.random() * 90000);
-                numbers.push(\`+91 \${p}*****\${rand}\`);
+                let last4 = Math.floor(1000 + Math.random() * 9000);
+                numbers.push(\`\${p}XXXXX\${last4}\`);
             }
             document.getElementById('sms-recipients').value = numbers.join(', ');
         }
@@ -362,13 +483,13 @@ const USER_HTML = `<!DOCTYPE html>
 
             if (tab === 'login') {
                 toggleBg.style.transform = 'translateX(0%)';
-                btnLogin.classList.add('text-white'); btnLogin.classList.remove('text-gray-400');
-                btnReg.classList.add('text-gray-400'); btnReg.classList.remove('text-white');
+                btnLogin.classList.add('text-white'); btnLogin.classList.remove('text-slate-400');
+                btnReg.classList.add('text-slate-400'); btnReg.classList.remove('text-white');
                 loginBox.classList.remove('hidden'); regBox.classList.add('hidden');
             } else {
                 toggleBg.style.transform = 'translateX(100%)';
-                btnReg.classList.add('text-white'); btnReg.classList.remove('text-gray-400');
-                btnLogin.classList.add('text-gray-400'); btnLogin.classList.remove('text-white');
+                btnReg.classList.add('text-white'); btnReg.classList.remove('text-slate-400');
+                btnLogin.classList.add('text-slate-400'); btnLogin.classList.remove('text-white');
                 regBox.classList.remove('hidden'); loginBox.classList.add('hidden');
             }
         }
@@ -384,9 +505,15 @@ const USER_HTML = `<!DOCTYPE html>
             toggleSidebar(false);
             ['home', 'wallet', 'kyc', 'history'].forEach(s => {
                 document.getElementById('sec-' + s).classList.add('hidden');
+                const navBtn = document.getElementById('nav-btn-' + s);
+                if (navBtn) {
+                    navBtn.className = s === section 
+                        ? 'flex flex-col items-center text-emerald-400 text-[10px] font-bold space-y-1 px-3 py-1 rounded-xl bg-emerald-500/10'
+                        : 'flex flex-col items-center text-slate-400 hover:text-emerald-400 text-[10px] font-semibold space-y-1 px-3 py-1 rounded-xl';
+                }
             });
             document.getElementById('sec-' + section).classList.remove('hidden');
-            const titles = { home: 'Home', wallet: 'Wallets & Withdrawal', kyc: 'KYC & Bank Details', history: 'Transaction History' };
+            const titles = { home: 'Home', wallet: 'My Wallets', kyc: 'KYC Verification', history: 'History' };
             document.getElementById('app-header-title').innerText = titles[section];
             if (section === 'history') loadHistoryData(historyTypeCache);
             if (section === 'home') generateMaskedNumbers();
@@ -417,25 +544,26 @@ const USER_HTML = `<!DOCTYPE html>
         function setupAppDashboard() {
             document.getElementById('auth-container').classList.add('hidden');
             document.getElementById('app-dashboard').classList.remove('hidden');
-            document.getElementById('app-header-mobile').innerText = \`📱 \${currentUser.mobile}\`;
+            document.getElementById('app-header-mobile').innerText = \`+91 \${currentUser.mobile}\`;
             document.getElementById('sidebar-user-name').innerText = currentUser.name;
-            document.getElementById('sidebar-user-mob').innerText = currentUser.mobile;
+            document.getElementById('sidebar-user-mob').innerText = \`+91 \${currentUser.mobile}\`;
+            document.getElementById('sidebar-avatar').innerText = currentUser.name.charAt(0).toUpperCase();
             updateWalletsUI();
             checkKycStatusUI();
             navigateTo('home');
         }
 
         function updateWalletsUI() {
-            document.getElementById('home-sms-wallet').innerText = \`₹\${currentUser.sms_wallet || 0}\`;
-            document.getElementById('val-sms-wallet').innerText = \`₹\${currentUser.sms_wallet || 0}\`;
-            document.getElementById('val-earning-wallet').innerText = \`₹\${currentUser.earning_wallet || 0}\`;
-            document.getElementById('val-bonus-wallet').innerText = \`₹\${currentUser.bonus_wallet || 0}\`;
+            const totalSms = (parseFloat(currentUser.sms_wallet) || 0) + (parseFloat(currentUser.bonus_wallet) || 0);
+            document.getElementById('home-sms-wallet').innerText = \`₹\${totalSms.toFixed(2)}\`;
+            document.getElementById('val-sms-wallet').innerText = \`₹\${totalSms.toFixed(2)}\`;
+            document.getElementById('val-earning-wallet').innerText = \`₹\${(parseFloat(currentUser.earning_wallet) || 0).toFixed(2)}\`;
         }
 
         function checkKycStatusUI() {
             if (currentUser.kyc_status === 'Verified') {
-                document.getElementById('kyc-status-badge').innerText = '✓ Verified (Locked)';
-                document.getElementById('kyc-status-badge').className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                document.getElementById('kyc-status-badge').innerText = '✓ Verified';
+                document.getElementById('kyc-status-badge').className = 'px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
                 document.getElementById('kyc-aadhaar').value = currentUser.aadhaar_no || '';
                 document.getElementById('kyc-pan').value = currentUser.pan_no || '';
                 document.getElementById('kyc-acc-name').value = currentUser.acc_holder_name || '';
@@ -461,7 +589,7 @@ const USER_HTML = `<!DOCTYPE html>
             const res = await fetch('/api/user/kyc', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             const data = await res.json();
             if (res.ok) {
-                alert('KYC submitted and verified successfully!');
+                alert('KYC Verified & Locked!');
                 currentUser = data.user;
                 checkKycStatusUI();
             } else { alert(data.error || 'Error submitting KYC'); }
@@ -480,7 +608,7 @@ const USER_HTML = `<!DOCTYPE html>
             const res = await fetch('/api/user/bank-update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             const data = await res.json();
             if (res.ok) {
-                alert('Bank account updated successfully!');
+                alert('Bank Account Updated!');
                 currentUser = data.user;
                 checkKycStatusUI();
                 closeBankChangeModal();
@@ -489,6 +617,12 @@ const USER_HTML = `<!DOCTYPE html>
 
         async function handleSendSms(e) {
             e.preventDefault();
+            const totalSms = (parseFloat(currentUser.sms_wallet) || 0) + (parseFloat(currentUser.bonus_wallet) || 0);
+            if (totalSms < 0.50) {
+                alert('Insufficient SMS Wallet balance. Please Add Fund.');
+                return;
+            }
+
             const recipients = document.getElementById('sms-recipients').value;
             const message = document.getElementById('sms-message').value;
 
@@ -503,18 +637,18 @@ const USER_HTML = `<!DOCTYPE html>
             spinner.classList.remove('hidden');
             barCont.classList.add('hidden');
             successIcon.classList.add('hidden');
-            statusText.innerText = 'Initializing Campaign...';
+            statusText.innerText = 'Connecting to SMSC...';
 
-            // Phase 1: 2 sec round spinner
+            // 2 sec round spinner
             setTimeout(() => {
                 spinner.classList.add('hidden');
                 barCont.classList.remove('hidden');
-                statusText.innerText = 'Broadcasting Campaign...';
+                statusText.innerText = 'Broadcasting Messages...';
                 fill.style.width = '0%';
                 setTimeout(() => { fill.style.width = '100%'; }, 50);
             }, 2000);
 
-            // Phase 2: 10 sec progress bar
+            // 10 sec progress bar
             setTimeout(async () => {
                 const res = await fetch('/api/user/sms', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentUser.id, recipients, message }) });
                 const data = await res.json();
@@ -525,6 +659,7 @@ const USER_HTML = `<!DOCTYPE html>
 
                 if (res.ok) {
                     currentUser.sms_wallet = data.new_sms_wallet;
+                    currentUser.earning_wallet = data.new_earning_wallet;
                     updateWalletsUI();
                     generateMaskedNumbers();
                 }
@@ -547,18 +682,22 @@ const USER_HTML = `<!DOCTYPE html>
             e.preventDefault();
             const amount = parseFloat(document.getElementById('wit-amount').value);
             if (amount < 5000 || amount > 50000) {
-                alert('Withdrawal limit error: Min amount is ₹5,000 and Max amount is ₹50,000.');
+                alert('Invalid amount entered.');
+                return;
+            }
+            if ((parseFloat(currentUser.earning_wallet) || 0) < amount) {
+                alert('Insufficient Earning Wallet balance.');
                 return;
             }
             if (currentUser.kyc_status !== 'Verified') {
-                alert('Please complete your KYC first before requesting a withdrawal.');
+                alert('Please complete KYC verification first.');
                 navigateTo('kyc');
                 return;
             }
             pendingWithdrawAmount = amount;
             document.getElementById('prev-wit-amount').innerText = \`₹\${amount}\`;
             document.getElementById('prev-bank-holder').innerText = currentUser.acc_holder_name || 'N/A';
-            document.getElementById('prev-bank-details').innerText = \`A/C: \${currentUser.bank_acc_no} | IFSC: \${currentUser.bank_ifsc}\`;
+            document.getElementById('prev-bank-details').innerText = \`A/C: \${currentUser.bank_acc_no} • IFSC: \${currentUser.bank_ifsc}\`;
             document.getElementById('withdraw-preview-modal').classList.remove('hidden');
         }
 
@@ -570,7 +709,7 @@ const USER_HTML = `<!DOCTYPE html>
             const res = await fetch('/api/user/withdraw', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentUser.id, amount: pendingWithdrawAmount, payment_info }) });
             const data = await res.json();
             if (res.ok) {
-                alert('Withdrawal request successful!');
+                alert('Withdrawal request submitted successfully!');
                 currentUser.earning_wallet = data.new_earning;
                 updateWalletsUI();
                 document.getElementById('wit-amount').value = '';
@@ -581,45 +720,48 @@ const USER_HTML = `<!DOCTYPE html>
             historyTypeCache = tab;
             ['deposits', 'withdrawals', 'sms'].forEach(t => {
                 const btn = document.getElementById('hist-btn-' + (t === 'deposits' ? 'dep' : t === 'withdrawals' ? 'wit' : 'sms'));
-                btn.className = 'flex-1 py-2 font-bold rounded-lg ' + (t === tab ? 'bg-emerald-600 text-white' : 'text-gray-400');
+                btn.className = 'flex-1 py-2 font-bold rounded-xl transition-all ' + (t === tab ? 'bg-emerald-600 text-white shadow' : 'text-slate-400');
             });
             loadHistoryData(tab);
         }
 
         async function loadHistoryData(type) {
             const listContainer = document.getElementById('history-content-list');
-            listContainer.innerHTML = '<p class="text-center text-xs text-gray-500 py-6">Loading...</p>';
+            listContainer.innerHTML = '<p class="text-center text-xs text-slate-500 py-8">Loading...</p>';
             const res = await fetch(\`/api/user/history?userId=\${currentUser.id}&type=\${type}\`);
             const data = await res.json();
             if (!res.ok) return;
 
             if (type === 'deposits') {
                 listContainer.innerHTML = data.items.map(i => \`
-                    <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-xs flex justify-between items-center">
+                    <div class="glass-card p-3.5 rounded-2xl text-xs flex justify-between items-center">
                         <div>
-                            <p class="font-bold text-white">Deposit: ₹\${i.amount}</p>
-                            <p class="text-[10px] text-gray-400 font-mono">UTR: \${i.utr_number}</p>
+                            <p class="font-extrabold text-white">Deposit • ₹\${i.amount}</p>
+                            <p class="text-[10px] text-slate-400 font-mono mt-0.5">UTR: \${i.utr_number}</p>
                         </div>
-                        <span class="px-2 py-1 rounded text-[10px] font-bold \${i.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : i.status === 'Rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">\${i.status}</span>
+                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold \${i.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : i.status === 'Rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">\${i.status}</span>
                     </div>
-                \`).join('') || '<p class="text-center text-xs text-gray-500 py-6">No deposit history.</p>';
+                \`).join('') || '<p class="text-center text-xs text-slate-500 py-8">No deposit records.</p>';
             } else if (type === 'withdrawals') {
                 listContainer.innerHTML = data.items.map(i => \`
-                    <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-xs flex justify-between items-center">
+                    <div class="glass-card p-3.5 rounded-2xl text-xs flex justify-between items-center">
                         <div>
-                            <p class="font-bold text-white">Withdrawal: ₹\${i.amount}</p>
-                            <p class="text-[10px] text-gray-400 truncate max-w-[180px]">\${i.payment_info}</p>
+                            <p class="font-extrabold text-white">Payout • ₹\${i.amount}</p>
+                            <p class="text-[10px] text-slate-400 truncate max-w-[180px] mt-0.5">\${i.payment_info}</p>
                         </div>
-                        <span class="px-2 py-1 rounded text-[10px] font-bold \${i.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : i.status === 'Rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">\${i.status}</span>
+                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold \${i.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : i.status === 'Rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">\${i.status}</span>
                     </div>
-                \`).join('') || '<p class="text-center text-xs text-gray-500 py-6">No withdrawal history.</p>';
+                \`).join('') || '<p class="text-center text-xs text-slate-500 py-8">No withdrawal records.</p>';
             } else if (type === 'sms') {
                 listContainer.innerHTML = data.items.map(i => \`
-                    <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-xs space-y-1">
-                        <div class="flex justify-between font-bold text-white"><span>To: \${i.recipients}</span><span class="text-emerald-400">\${i.status}</span></div>
-                        <p class="text-[11px] text-gray-300">"\${i.message}"</p>
+                    <div class="glass-card p-3.5 rounded-2xl text-xs space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <span class="font-mono text-[11px] font-bold text-slate-200">\${i.recipients}</span>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">\${i.status}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 line-clamp-2">"\${i.message}"</p>
                     </div>
-                \`).join('') || '<p class="text-center text-xs text-gray-500 py-6">No SMS campaign logs.</p>';
+                \`).join('') || '<p class="text-center text-xs text-slate-500 py-8">No SMS logs yet.</p>';
             }
         }
 
@@ -631,14 +773,13 @@ const USER_HTML = `<!DOCTYPE html>
             modal.classList.remove('hidden');
             if(type === 'terms') {
                 title.innerText = 'Terms & Conditions';
-                content.innerHTML = '<p>1. Users must maintain sufficient SMS wallet balance to broadcast campaigns.</p><p>2. Withdrawals are processed strictly within limits (Min ₹5,000 / Max ₹50,000).</p><p>3. KYC details once submitted and verified cannot be modified directly except bank account number and IFSC.</p>';
+                content.innerHTML = '<p>1. Active SMS Wallet balance is required to run promotional broadcasts.</p><p>2. Payouts are processed strictly to verified bank accounts linked in KYC.</p><p>3. Verified KYC details are locked for security; only bank account & IFSC can be updated via settings.</p>';
             } else {
                 title.innerText = 'Refund Policy';
-                content.innerHTML = '<p>1. Deposit requests submitted with invalid UTR will be rejected by admin.</p><p>2. Rejected withdrawal amounts are automatically refunded back to the user earning wallet.</p><p>3. All campaign charges are final upon successful broadcast.</p>';
+                content.innerHTML = '<p>1. Deposits with invalid or duplicate UTR numbers will be declined.</p><p>2. Declined withdrawal requests are automatically credited back to your Earning Wallet.</p><p>3. Completed SMS broadcasts are non-refundable.</p>';
             }
         }
         function closePolicyModal() { document.getElementById('policy-modal').classList.add('hidden'); }
-
         function openQrModal() { document.getElementById('qr-modal').classList.remove('hidden'); }
         function closeQrModal() { document.getElementById('qr-modal').classList.add('hidden'); }
         function logout() { location.reload(); }
@@ -697,14 +838,15 @@ export default {
         const { userId, recipients, message } = await request.json();
         const smsCost = 0.50;
         const earningGain = 1.50;
-        const user = await env.DB.prepare("SELECT sms_wallet FROM users WHERE id = ?").bind(userId).first();
-        if (!user || user.sms_wallet < smsCost) {
+        const user = await env.DB.prepare("SELECT sms_wallet, bonus_wallet FROM users WHERE id = ?").bind(userId).first();
+        const totalAvailable = (user?.sms_wallet || 0) + (user?.bonus_wallet || 0);
+        if (!user || totalAvailable < smsCost) {
           return new Response(JSON.stringify({ error: "Insufficient SMS Wallet balance" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
         await env.DB.prepare("UPDATE users SET sms_wallet = sms_wallet - ?, earning_wallet = earning_wallet + ? WHERE id = ?").bind(smsCost, earningGain, userId).run();
         await env.DB.prepare("INSERT INTO sms_logs (user_id, recipients, message, status) VALUES (?, ?, ?, 'Sent')").bind(userId, recipients, message).run();
-        const updated = await env.DB.prepare("SELECT sms_wallet FROM users WHERE id = ?").bind(userId).first();
-        return new Response(JSON.stringify({ success: true, new_sms_wallet: updated.sms_wallet }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        const updated = await env.DB.prepare("SELECT sms_wallet, earning_wallet FROM users WHERE id = ?").bind(userId).first();
+        return new Response(JSON.stringify({ success: true, new_sms_wallet: updated.sms_wallet, new_earning_wallet: updated.earning_wallet }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
       if (path === "/api/user/deposit" && method === "POST") {
@@ -716,7 +858,7 @@ export default {
       if (path === "/api/user/withdraw" && method === "POST") {
         const { userId, amount, payment_info } = await request.json();
         if (amount < 5000 || amount > 50000) {
-          return new Response(JSON.stringify({ error: "Amount must be between ₹5,000 and ₹50,000" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+          return new Response(JSON.stringify({ error: "Invalid withdrawal amount" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
         const user = await env.DB.prepare("SELECT earning_wallet FROM users WHERE id = ?").bind(userId).first();
         if (!user || user.earning_wallet < amount) {
